@@ -201,6 +201,7 @@
 
   /* ── Gate table ── */
   .gate-pass { color: #1a7a3a; font-weight: 700; }
+  .gate-fail { color: var(--red); font-weight: 700; }
   .gate-warn { color: var(--red); font-weight: 700; }
 
   /* ── Escalation badge ── */
@@ -284,13 +285,13 @@
   <tr><td>5</td><td>SRB biofilm, Monod kinetics, Nernst-Planck ion transport (MIC)</td><td>✓ Used</td></tr>
   <tr><td>6</td><td>Galvanic corrosion, Laplace potential field, MCMC inverse</td><td>✓ Used</td></tr>
   <tr><td>7</td><td>Fickian H&#x2082; diffusion, Paris Law HA-FCG, pit-to-crack (LF-ERW)</td><td>✓ Used</td></tr>
-  <tr><td><strong>9</strong></td><td><strong>Fourier heat conduction + Philip-de Vries hygrothermal moisture transport + Butler-Volmer electrochemistry + DFOS adjoint inverse</strong></td><td style="color:#1a7a3a;font-weight:700;">NEW &mdash; No overlap</td></tr>
+  <tr><td><strong>9</strong></td><td><strong>Fourier heat conduction + Philip-de Vries hygrothermal moisture transport + Butler-Volmer electrochemistry + Strang splitting + DFOS golden-section inverse</strong></td><td style="color:#1a7a3a;font-weight:700;">NEW &mdash; No overlap</td></tr>
 </table>
 
 <!-- ══════════════════════════════════════════════════════════ -->
 <h2>3. Governing Physics</h2>
 
-<p>Domain: 2D axisymmetric $(r, z)$ comprising the steel pipe wall, insulation annulus, and outer aluminium cladding. Three fully coupled PDEs solved by Strang operator splitting.</p>
+<p>Domain: 1D radial $r$ across the steel pipe wall, insulation annulus, and outer aluminium cladding. The mesh exposes an axial coordinate $z$ but the PDE solvers do not couple along $z$ in v1.1.0 &mdash; it is reserved for future work (&sect;9). Three fully coupled radial PDEs solved by Strang operator splitting.</p>
 
 <!-- FIELD 1 -->
 <h3>Field 1 &mdash; Fourier Heat Conduction with Effective Medium</h3>
@@ -337,15 +338,14 @@
   <div class="eq-label">Moisture transport PDE</div>
   $$
     \frac{\partial \theta_w}{\partial t}
-    = \nabla \cdot \bigl[D_\theta(\theta_w, T)\,\nabla\theta_w\bigr]
+    = \nabla \cdot \bigl[D_\theta(\theta_w)\,\nabla\theta_w\bigr]
     + \nabla \cdot \bigl[D_T(\theta_w, T)\,\nabla T\bigr]
-    + S_{\text{moisture}}(\mathbf{x}, t)
     \tag{2}
   $$
   <div class="eq-note">
-    $D_\theta(\theta_w, T)$ &mdash; isothermal moisture diffusivity [m&#x00B2; s&#x207B;&#x00B9;]; capillary transport driven by matric potential gradient.<br>
+    $D_\theta(\theta_w)$ &mdash; isothermal moisture diffusivity [m&#x00B2; s&#x207B;&#x00B9;]; capillary transport driven by matric potential gradient.<br>
     $D_T(\theta_w, T)$ &mdash; Philip-de Vries thermally driven vapour flux diffusivity [m&#x00B2; s&#x207B;&#x00B9; K&#x207B;&#x00B9;]; moisture is drawn <em>toward</em> the hot pipe surface (gradient opposes thermal gradient).<br>
-    $S_{\text{moisture}}(\mathbf{x}, t)$ &mdash; localised moisture source at cladding holiday sites [m&#x00B3; m&#x207B;&#x00B3; s&#x207B;&#x00B9;]. <span class="badge">INVERSE TARGET</span>
+    The holiday is modelled as a parametric Dirichlet boundary (Eq.&nbsp;2c) rather than a volumetric source. The strength parameter $S_{\text{mag}}$ at that boundary is the target of the inverse problem (&sect;4). <span class="badge">INVERSE TARGET</span>
   </div>
 </div>
 
@@ -370,9 +370,11 @@
 </div>
 
 <div class="eq-block">
-  <div class="eq-label">Boundary conditions — Field 2</div>
+  <div class="eq-label">Boundary conditions — Field 2 (partial-holiday Dirichlet)</div>
   $$
-    \theta_w\big|_{\text{holiday}} = \theta_{\text{sat}} \quad \text{(Dirichlet at cladding defect)}
+    \theta_w\big|_{\text{holiday}} = f\,\theta_{\text{sat}} + (1-f)\,\theta_{\text{init}},
+    \qquad
+    f = \min\!\left(\frac{S_{\text{mag}}}{S_{\text{ref}}},\; 1\right)
     \tag{2c}
   $$
   $$
@@ -383,6 +385,9 @@
     \theta_w\big|_{t=0} = \theta_{\text{init}} \approx 0.01 \quad \text{[ASSUMED: dry insulation initial state]}
     \tag{2e}
   $$
+  <div class="eq-note">
+    $f \in [0,1]$ is the fraction of the cladding circumference at saturation (defect area &divide; nominal pitch). $S_{\text{mag}} = S_{\text{ref}} = 10^{-6}$ m&#x00B3; m&#x207B;&#x00B3; s&#x207B;&#x00B9; corresponds to a fully wet holiday ($f=1$); $S_{\text{mag}} = 0$ is intact cladding ($f=0$). For $S_{\text{mag}} \ge S_{\text{ref}}$ the BC saturates at $\theta_{\text{sat}}$ &mdash; consequence: the inverse problem (&sect;4) is identifiable only on $S_{\text{mag}} \in [0, S_{\text{ref}}]$.
+  </div>
 </div>
 
 <!-- FIELD 3 -->
@@ -476,61 +481,72 @@
 <!-- ══════════════════════════════════════════════════════════ -->
 <h2>4. Inverse Problem &mdash; DFOS-Informed Moisture Source Identification</h2>
 
-<p>DFOS measures the outer-cladding temperature profile $T_{\text{obs}}(x,\, t_{\text{obs}})$ with spatial resolution ~0.5&nbsp;m. The inverse problem identifies the moisture source distribution $S_{\text{moisture}}(\mathbf{x})$ from that measurement.</p>
+<p>A DFOS sensor reports the outer-cladding temperature $T_{\text{obs}}$ at a single radial node of the 1D model after $t_{\text{obs}}$ days of integration. The single-parameter inverse problem recovers the holiday strength $S_{\text{mag}}$ &mdash; which controls the partial-holiday Dirichlet BC (Eq.&nbsp;2c) &mdash; from that scalar observation. The DFOS measurement noise is modelled as zero-mean Gaussian with $\sigma = 0.03$ K [ASSUMED].</p>
 
 <div class="eq-block">
-  <div class="eq-label">Tikhonov-regularised least squares</div>
+  <div class="eq-label">Tikhonov-regularised single-parameter misfit</div>
   $$
-    \min_{S}\;
+    \min_{S \in [0,\, S_{\text{ref}}]}\;
     \mathcal{J}(S)
     =
     \underbrace{
-      \int_\Omega \bigl[T_{\text{obs}}(x) - T_{\text{model}}(x;\,S)\bigr]^2\, dx
-    }_{\text{data misfit}}
+      \bigl[T_{\text{obs}} - T_{\text{model}}(S)\bigr]^2
+    }_{\text{data misfit (scalar)}}
     +\;
-    \lambda_{\text{reg}}
-    \underbrace{
-      \int_\Omega \|\nabla S(\mathbf{x})\|^2\, d\mathbf{x}
-    }_{\text{Tikhonov regulariser}}
+    \lambda_{\text{reg}}\, S^2
     \tag{6}
   $$
   <div class="eq-note">
-    $\lambda_{\text{reg}}$ &mdash; regularisation parameter selected by the L-curve criterion (computed, not assumed).<br>
-    $T_{\text{model}}(x;\,S)$ &mdash; outer-cladding temperature produced by the coupled forward model given source field $S$.
+    $T_{\text{model}}(S)$ &mdash; outer-cladding temperature produced by the coupled forward model with $S_{\text{mag}} = S$ feeding Eq.&nbsp;2c.<br>
+    $\lambda_{\text{reg}}$ &mdash; regularisation parameter (default $10^{-12}$ K&#x00B2; m&#x2076; m&#x207B;&#x2076; s&#x00B2;); kept small because the search is constrained to a 1D bounded interval.<br>
+    <strong>Identifiability constraint:</strong> for $S \ge S_{\text{ref}}$ the BC saturates at $\theta_{\text{sat}}$ and $T_{\text{model}}(S)$ is constant in $S$ &mdash; the misfit is flat above $S_{\text{ref}}$. Callers must cap the search interval at $S_{\text{ref}} = 10^{-6}$ m&#x00B3; m&#x207B;&#x00B3; s&#x207B;&#x00B9;.
   </div>
 </div>
 
 <div class="eq-block">
-  <div class="eq-label">Adjoint gradient of the misfit</div>
+  <div class="eq-label">Solver &mdash; golden-section line search</div>
   $$
-    \frac{\delta \mathcal{J}}{\delta S}
-    = \int_0^{t_{\text{obs}}} \lambda^*({\mathbf{x}}, t)\, dt
+    \varphi = \tfrac{\sqrt{5}-1}{2},\quad
+    c = b - \varphi(b-a),\;
+    d = a + \varphi(b-a)
+    \;\;\Rightarrow\;\;
+    \begin{cases}
+      \mathcal{J}(c) < \mathcal{J}(d) & \Rightarrow b \leftarrow d \\
+      \text{else} & \Rightarrow a \leftarrow c
+    \end{cases}
     \tag{7}
   $$
   <div class="eq-note">
-    $\lambda^*(\mathbf{x}, t)$ &mdash; adjoint variable satisfying the backward-in-time adjoint PDE:<br>
-    $$
-      -\rho_{\text{eff}}\,c_p\,\frac{\partial \lambda^*}{\partial t}
-      = \nabla\cdot(\lambda_{\text{eff}}\,\nabla\lambda^*)
-      + 2\bigl[T_{\text{obs}} - T_{\text{model}}\bigr]\,\delta(t - t_{\text{obs}})
-      \tag{7a}
-    $$
-    Gradient (7) enables efficient L-BFGS optimisation of (6) without finite-difference perturbations.
+    Iterated until $|b-a| < 10^{-10}$ or $30$ iterations. Each iteration calls the forward model twice; the forward integration on a $11$-node radial mesh and $4 \times 60$-day outer steps takes $\sim 5$&ndash;$10$&nbsp;s. A full inverse run (30 iter, 60 forward calls) completes in under a minute on a laptop CPU.<br>
+    No adjoint formulation is used; the cost of finite-difference / golden-section is negligible at this dimensionality.
   </div>
 </div>
 
 <div class="eq-block">
-  <div class="eq-label">Surrogate acceleration (GBR) — justified</div>
-  <p>Forward model runtime: 4&ndash;8 min per evaluation on a single CPU core. Inverse solver (L-BFGS) requires $\mathcal{O}(10^2)$ forward calls. A Gradient Boosting Regressor (GBR) surrogate trained on $N_{\text{LHS}} = 2000$ Latin Hypercube samples maps:</p>
+  <div class="eq-label">Synthetic test cases &mdash; recovery accuracy</div>
+  <table>
+    <tr><th>$S_{\text{true}}$ [m&#x00B3; m&#x207B;&#x00B3; s&#x207B;&#x00B9;]</th><th>$S_{\text{opt}}$</th><th>Relative error</th></tr>
+    <tr><td>$2.0\times10^{-7}$</td><td>$2.0\times10^{-7}$</td><td>0.2 %</td></tr>
+    <tr><td>$5.0\times10^{-7}$</td><td>$5.0\times10^{-7}$</td><td>0.0 %</td></tr>
+    <tr><td>$8.0\times10^{-7}$</td><td>$7.9\times10^{-7}$</td><td>0.9 %</td></tr>
+  </table>
+  <div class="eq-note">
+    Synthetic DFOS observation: $T_{\text{obs}} = T_{\text{model}}(S_{\text{true}}) + \mathcal{N}(0, 0.03 \text{ K})$. Search interval $[0,\, 10^{-6}]$. All three cases recover within 1 % &mdash; locked as a regression test in <code>tests/test_remaining.py::test_inverse_recovers_S_within_tolerance</code> at a 5 % tolerance.
+  </div>
+</div>
+
+<div class="eq-block">
+  <div class="eq-label">Surrogate acceleration (GBR)</div>
+  <p>A Gradient Boosting Regressor surrogate maps the 6-parameter UQ feature space directly to the wall-loss endpoint, supporting fast sensitivity analysis on $N = 10{,}000$ Monte Carlo samples (&sect;5):</p>
   $$
-    \hat{T}_{\text{clad}}(x;\,\boldsymbol{\theta})
-    \approx T_{\text{model}}(x;\,\boldsymbol{\theta}),
+    \widehat{\text{WT}}(\boldsymbol{\xi})
+    \approx \text{WT}_{\text{model}}(\boldsymbol{\xi}),
     \qquad
-    \boldsymbol{\theta} = \{S_0,\, x_{\text{defect}},\, L_{\text{defect}},\, \theta_{\text{crit}},\, \lambda_{\text{eff}}\}
+    \boldsymbol{\xi} = \{S_{\text{mag}},\, \theta_{\text{crit}},\, i_{0,\text{ref}},\, E_a,\, \lambda_{\text{eff}},\, L_{\text{defect}}\}
     \tag{8}
   $$
   <div class="eq-note">
-    ML is justified: it accelerates the inverse loop only. The surrogate is not used to replace the governing PDEs. Every surrogate prediction outside the physical feasibility region ($\hat{T}_{\text{clad}} < T_\infty$ or $> T_{\text{process}}$) is rejected and flagged.
+    Out-of-sample $R^2 = 0.93$, MAE $\approx 0.02$ mm at the 10-year assessment horizon (run-time numbers from <code>run_all.py [4/9]</code>). The surrogate is not part of the inverse loop; the inverse calls the full forward model directly. Every surrogate prediction is clipped to the physical feasibility window $[0, t_{\text{nom}} \cdot 10^3]$ mm.
   </div>
 </div>
 
@@ -551,7 +567,8 @@
     \tag{10}
   $$
   <div class="eq-note">
-    Right-censoring: runs where $\text{WT}_k > t_{\text{nom}}$ (perforation) before $t^*$ are flagged, annotated in the CDF, and separated as a hatched bar in the histogram. They are not discarded.
+    Right-censoring: runs where $\text{WT}_k > t_{\text{nom}}$ (perforation) before $t^*$ are flagged, annotated in the CDF, and separated as a hatched bar in the histogram. They are not discarded.<br>
+    <strong>Implementation note:</strong> the MC inner loop uses a closed-form Faraday integration (<code>_wl_from_params</code> in <code>src/monte_carlo.py</code>) rather than the full coupled PDE, for tractability at $N=10^4$. This is the $\boldsymbol{\xi}$&rarr;$\text{WT}$ map captured by the GBR surrogate (Eq.&nbsp;8). The deterministic baseline and the inverse problem (&sect;3, &sect;4) use the full coupled solver.
   </div>
 </div>
 
@@ -598,57 +615,75 @@
   <tr>
     <td>PDE coupling</td>
     <td>2-way: Fickian H&#x2082; diffusion + Paris Law</td>
-    <td>3-way: Fourier + Philip-de Vries + Butler-Volmer</td>
+    <td>3-way: Fourier + Philip-de Vries + Butler-Volmer, Strang-split</td>
     <td><span class="badge">+1 field</span></td>
   </tr>
   <tr>
     <td>Inverse problem</td>
     <td>None</td>
-    <td>Adjoint-based Tikhonov inversion, DFOS-constrained</td>
+    <td>Single-parameter Tikhonov inversion via golden-section, DFOS-constrained, identifiable on $S \in [0, S_{\text{ref}}]$</td>
     <td><span class="badge">New</span></td>
   </tr>
   <tr>
     <td>Domain geometry</td>
     <td>1D pipe wall</td>
-    <td>2D axisymmetric (pipe wall + insulation annulus)</td>
-    <td><span class="badge">+1 dim</span></td>
+    <td>1D radial (pipe wall + insulation annulus + cladding); axial coordinate is mesh-only, not coupled</td>
+    <td><span class="badge">Same dim, new annulus</span></td>
   </tr>
   <tr>
     <td>Sensor integration</td>
     <td>None</td>
-    <td>DFOS noise model + measurement uncertainty propagation</td>
+    <td>Single-point DFOS noise model ($\sigma = 0.03$ K) + UQ over 6 parameters via LHS</td>
+    <td><span class="badge">New</span></td>
+  </tr>
+  <tr>
+    <td>Test coverage</td>
+    <td>n/a</td>
+    <td>154 unit + integration tests, 5 analytical benchmarks (Faraday 0.034 %, Arrhenius 0 %)</td>
     <td><span class="badge">New</span></td>
   </tr>
 </table>
 
 <!-- ══════════════════════════════════════════════════════════ -->
 <h2>8. Assumed Parameters [ASSUMED]</h2>
+<p>Values mirror <code>src/constants.py</code> in v1.1.0. Each must be validated against site-specific inspection data before any operational use.</p>
 <table>
   <tr><th>Parameter</th><th>Value</th><th>Basis</th></tr>
   <tr><td>$\theta_{\text{crit}}$</td><td>0.05 vol fraction</td><td>API RP 583 qualitative guidance <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$\theta_{\text{init}}$</td><td>0.01 vol fraction</td><td>Dry insulation initial state <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$\theta_{\text{sat}}$</td><td>0.80 vol fraction</td><td>Saturated mineral wool <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$D_{\theta,0}$ (mineral wool)</td><td>$6.0\times10^{-11}$ m&#x00B2; s&#x207B;&#x00B9;</td><td>Porous-media literature, mineral wool <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$\beta_\theta$</td><td>5.0</td><td>$D_\theta$ exponential slope <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$S_{\text{ref}}$</td><td>$1.0\times10^{-6}$ m&#x00B3; m&#x207B;&#x00B3; s&#x207B;&#x00B9;</td><td>Holiday strength reference (full holiday at $S_{\text{mag}} = S_{\text{ref}}$); inverse identifiable on $[0, S_{\text{ref}}]$</td></tr>
   <tr><td>$i_{0,\text{ref}}$ at 25&deg;C</td><td>$1.0\times10^{-5}$ A m&#x207B;&#x00B2;</td><td>General Fe dissolution literature <span class="assumed">[ASSUMED]</span></td></tr>
-  <tr><td>$E_a$</td><td>50 kJ mol&#x207B;&#x00B9;</td><td>General electrochemistry literature <span class="assumed">[ASSUMED]</span></td></tr>
-  <tr><td>$D_{\theta,0}$ (mineral wool)</td><td>$1\times10^{-8}$ m&#x00B2; s&#x207B;&#x00B9;</td><td>Order-of-magnitude, porous media literature <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$E_a$ (Fe dissolution)</td><td>50 kJ mol&#x207B;&#x00B9;</td><td>General electrochemistry literature <span class="assumed">[ASSUMED]</span></td></tr>
   <tr><td>$\alpha_a = \alpha_c$</td><td>0.5</td><td>Symmetric Butler-Volmer <span class="assumed">[ASSUMED]</span></td></tr>
-  <tr><td>$\lambda_{\text{reg}}$</td><td>L-curve method</td><td>Computed, not assumed</td></tr>
+  <tr><td>$\eta_{\text{mixed}}$</td><td>0.15 V</td><td>Anodic mixed overpotential <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$K_{\text{mat}}$ (X52)</td><td>70 MPa $\sqrt{\text{m}}$</td><td>Sweet service estimate <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>DFOS noise $\sigma$</td><td>0.03 K</td><td>Continuous DFOS measurement noise <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$\lambda_{\text{reg}}$</td><td>$10^{-12}$</td><td>Tikhonov coefficient; small because the search interval is bounded</td></tr>
 </table>
 
 <!-- ══════════════════════════════════════════════════════════ -->
-<h2>9. Self-Review Gate</h2>
+<h2>9. Verification Status</h2>
 <table>
-  <tr><th>Reviewer Persona</th><th>Result</th><th>Note</th></tr>
-  <tr><td>Senior corrosion engineer</td><td class="gate-pass">PASS</td><td>API RP 583 temperature window reproduced; Butler-Volmer moisture threshold is standard practice; CUI wetting mechanism correctly modelled.</td></tr>
-  <tr><td>API 579 committee member</td><td class="gate-pass">PASS</td><td>PHMSA-2026-1520 directly cited; [ASSUMED] flags explicit; FAD uses Option B curve from API 579-1.</td></tr>
-  <tr><td>Computational physics professor</td><td class="gate-pass">PASS</td><td>Strang splitting achieves $\mathcal{O}(\Delta t^2)$; adjoint inverse is mathematically rigorous; Tikhonov regularisation well-posed.</td></tr>
-  <tr><td>Cybersecurity engineer</td><td class="gate-pass">PASS</td><td>Full STRIDE model; data poisoning defence uses physics residual validation; DFOS network on OT-segment VLAN.</td></tr>
-  <tr><td>CTO / Reliability lead</td><td class="gate-pass">PASS</td><td>Go/no-go iso-risk contour explicit; false positive reduction quantified; remaining-life distribution from MC directly drives inspection interval decision.</td></tr>
+  <tr><th>Concern</th><th>Status</th><th>Evidence</th></tr>
+  <tr><td>API RP 583 temperature window (50&ndash;175&deg;C)</td><td class="gate-pass">PASS</td><td>Baseline at 120&deg;C reproduces $i_{\text{corr}}$ peak; deterministic 10-yr WT $= 0.136$ mm.</td></tr>
+  <tr><td>FAD uses API 579-1 Level 2 Option B</td><td class="gate-pass">PASS</td><td>$f(L_r)$ matches Eq.&nbsp;(13); $L_{r,\max}$ derived from X52 SMYS/UTS; trajectory plotted in panel&nbsp;G.</td></tr>
+  <tr><td>Strang splitting 2nd-order in time</td><td class="gate-pass">PASS</td><td>EC&middot;HY&middot;TH&middot;HY&middot;EC schedule with EC at $\Delta t/2$, TH at $\Delta t$; CN sub-operators are $\mathcal{O}(\Delta t^2)$.</td></tr>
+  <tr><td>Analytical benchmarks close</td><td class="gate-pass">PASS</td><td>Faraday 0.034 %, Arrhenius 0 %, Butler-Volmer&rarr;Tafel 0 %, $D_\theta$ scaling 0 %, steady-state $T_{\text{outer}}$ 0.79 K vs slab approximation.</td></tr>
+  <tr><td>Inverse problem identifiable on stated range</td><td class="gate-pass">PASS</td><td>Recovery error &lt; 1 % on $S \in [0, S_{\text{ref}}]$ in 3/3 synthetic cases; locked as regression test. Above $S_{\text{ref}}$ the BC saturates &mdash; explicitly out of identifiable range.</td></tr>
+  <tr><td>Adjoint formulation</td><td class="gate-fail">NOT IMPLEMENTED</td><td>Out of scope for v1.1.0. The 1D single-parameter inverse uses golden-section line search; finite-difference cost is negligible at this dimensionality.</td></tr>
+  <tr><td>2D axisymmetric coupling along $z$</td><td class="gate-fail">NOT IMPLEMENTED</td><td>Geometry mesh has axial nodes but PDE solvers are 1D radial. Documented as known limitation; future work.</td></tr>
+  <tr><td>Cybersecurity (STRIDE on DFOS)</td><td class="gate-pass">PASS</td><td>Threat model in README; SHA-256 audit chain with tamper detection (regression-tested); OT-segment VLAN for DFOS network.</td></tr>
+  <tr><td>Reproducibility</td><td class="gate-pass">PASS</td><td>154 tests, 5 benchmarks, $\sim 70$ s deterministic pipeline. CI matrix on Python 3.11&ndash;3.13 &times; Ubuntu/macOS/Windows. Generated artefacts attached to GitHub release.</td></tr>
 </table>
 
 <hr class="section-rule">
 
 <div class="footer">
-  <span>INTEGRITY CODE SERIES &mdash; ICS2 &nbsp;|&nbsp; Week 9 &nbsp;|&nbsp; Physics-first. Verification over visibility.</span>
-  <span>April 24, 2026</span>
+  <span>INTEGRITY CODE SERIES &mdash; ICS2 &nbsp;|&nbsp; Week 9 &nbsp;|&nbsp; v1.1.0 &nbsp;|&nbsp; Physics-first. Verification over visibility.</span>
+  <span>April 28, 2026</span>
 </div>
 
 </body>
