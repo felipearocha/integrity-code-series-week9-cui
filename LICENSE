@@ -1,0 +1,43 @@
+Integrity Code Series — Research and Educational Use License (RES-EDU-1.0)
+
+Copyright (c) 2026 Felipe Rocha
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use,
+copy, modify, merge, publish, and distribute the Software for the following
+purposes only:
+
+  1. Personal study, academic research, and classroom instruction.
+  2. Engineering exploration, prototype validation, and method comparison.
+  3. Public demonstrations, conference talks, and benchmarking.
+
+USE FOR FITNESS-FOR-SERVICE OR OPERATIONAL DECISIONS — INCLUDING BUT NOT
+LIMITED TO API 579-1 fitness-for-service assessments, API RP 583 inspection
+planning, regulatory submissions to PHMSA or equivalent jurisdictional
+authorities, or any decision affecting the integrity, life-extension, or
+operability of an in-service pressure vessel, pipeline, or piping system —
+IS NOT PERMITTED WITHOUT (a) independent qualified-engineer review of all
+[ASSUMED] parameters against site-specific inspection data, AND (b) explicit
+written authorisation from the contributors.
+
+Subject to the conditions above, the following permissions apply:
+
+  - The Software may be redistributed in source or binary form, provided
+    this license text is included in full and the copyright notice is
+    preserved.
+  - Modified versions must clearly state the changes made and must not
+    misrepresent the unmodified Software as having been authored by the
+    modifier.
+  - Commercial redistribution (sale or paid sublicensing) is permitted
+    only with prior written agreement from the contributors.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+API RP 583, API 579-1, PHMSA regulations, and any equivalent jurisdictional
+codes take precedence over any output of this Software.

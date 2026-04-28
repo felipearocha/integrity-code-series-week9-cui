@@ -1,0 +1,47 @@
+name: Feature request
+description: Propose a new physics, numerics, or API capability.
+title: "[feat] "
+labels: ["enhancement", "needs-discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Explain the **industrial use case first**, then the proposed API.
+        Features that don't trace back to a fitness-for-service or inspection
+        decision are unlikely to be merged.
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What integrity decision does this enable that today is impossible or ad-hoc?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: API surface, equations, parameters. Be concrete.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing workarounds, related features, why they fall short.
+
+  - type: textarea
+    id: refs
+    attributes:
+      label: References
+      description: API codes, papers, regulations, prior incidents.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This is consistent with the LICENSE (research/educational use).
+        - label: I am willing to draft the PR or co-author it.

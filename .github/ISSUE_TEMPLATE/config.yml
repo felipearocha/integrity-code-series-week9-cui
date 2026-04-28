@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability (private)
+    url: https://github.com/felipearocha/integrity-code-series-week9-cui/security/advisories/new
+    about: Report a vulnerability that could mislead an integrity decision. Use private advisory rather than a public issue.
+  - name: Operational fitness-for-service questions
+    url: https://www.api.org/products-and-services/standards
+    about: This software is for research and education only. For real fitness-for-service decisions, consult API 579-1 / API RP 583 and a qualified engineer.

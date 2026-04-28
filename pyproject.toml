@@ -1,0 +1,147 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ics2-week9-cui-thermohygro"
+version = "1.1.0"
+description = "Coupled thermohygro-electrochemical CUI simulator with DFOS-informed inverse problem (Integrity Code Series, Week 9)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Felipe Rocha", email = "felipe@olivainternationaltech.com" },
+]
+keywords = [
+    "corrosion-under-insulation",
+    "cui",
+    "pipeline-integrity",
+    "philip-de-vries",
+    "butler-volmer",
+    "strang-splitting",
+    "monte-carlo",
+    "fitness-for-service",
+    "api-579",
+    "api-rp-583",
+    "dfos",
+    "inverse-problem",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Manufacturing",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy>=2.0.0",
+    "scipy>=1.12.0",
+    "matplotlib>=3.8.0",
+    "scikit-learn>=1.4.0",
+    "Pillow>=10.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.5.0",
+    "pre-commit>=3.7.0",
+]
+
+[project.urls]
+Homepage   = "https://github.com/felipearocha/integrity-code-series-week9-cui"
+Repository = "https://github.com/felipearocha/integrity-code-series-week9-cui"
+Issues     = "https://github.com/felipearocha/integrity-code-series-week9-cui/issues"
+Changelog  = "https://github.com/felipearocha/integrity-code-series-week9-cui/blob/main/CHANGELOG.md"
+
+[tool.setuptools]
+packages = ["src", "validation", "visualization"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--showlocals",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:matplotlib.*",
+    "ignore::DeprecationWarning:sklearn.*",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = [
+    "src/__init__.py",
+    "tests/*",
+    "validation/*",
+    "visualization/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    "assets",
+    "notebooks",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+    "NPY", # numpy-specific
+]
+ignore = [
+    "E501",  # line-too-long — handled by formatter where it matters
+    "E701",  # multiple-statements-on-one-line-colon — codebase uses compact one-liners
+    "E702",  # multiple-statements-on-one-line-semicolon — same
+    "E741",  # ambiguous-variable-name — physics uses single letters (i, l, T, etc.)
+    "B007",  # unused-loop-control-variable — `for _ in range(...)` is idiomatic here
+    "B008",  # function-call-in-default-argument — acceptable for numpy/scipy defaults
+    "B905",  # zip-strict — added in py3.10+, acceptable for short numeric pairs
+    "SIM108", # ternary-for-if-else — readability over compactness in physics blocks
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*"          = ["E501", "F401", "F811", "F841"]
+"validation/*"     = ["E501", "F401", "E402"]
+"visualization/*"  = ["E501", "I001"]   # matplotlib.use("Agg") must precede pyplot import
+"src/constants.py" = ["E501"]
+"run_all.py"       = ["E402", "F401"]
+"conftest.py"      = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src", "validation", "visualization"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true

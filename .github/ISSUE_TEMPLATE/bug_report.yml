@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a defect — wrong physics, failing test, broken pipeline.
+title: "[bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. Physics correctness and
+        reproducibility matter — please be specific.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences. What did you expect, what happened?
+      placeholder: "run_all.py [6/9] reports recovery error of 80% instead of <1%"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Exact commands to trigger the bug. Paste full output if relevant.
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What should have happened? Cite README equation or test if applicable.
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "3.12.3"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Ubuntu 24.04 / macOS 14.5 / Windows 11"
+    validations:
+      required: true
+
+  - type: textarea
+    id: env
+    attributes:
+      label: Package versions
+      description: Output of `pip freeze | grep -E "numpy|scipy|matplotlib|scikit-learn"`.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-flight
+      options:
+        - label: I ran `pytest tests/` and the failure is reproducible.
+        - label: I checked that this is not already reported.

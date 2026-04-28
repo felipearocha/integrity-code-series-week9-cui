@@ -1,0 +1,37 @@
+name: Physics question
+description: Question about a governing equation, BC, parameter, or numerical method.
+title: "[physics] "
+labels: ["question", "physics"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cite the equation number from the README, the API code clause if
+        relevant, and the parameter values that triggered the question.
+
+  - type: input
+    id: equation
+    attributes:
+      label: Equation reference
+      placeholder: "Eq. (2c) — partial-holiday Dirichlet"
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: What is unclear or appears incorrect? What would you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context (parameter values, mesh, timesteps)
+
+  - type: textarea
+    id: refs
+    attributes:
+      label: Supporting references
+      description: Papers, code clauses, textbooks. Page/equation numbers please.

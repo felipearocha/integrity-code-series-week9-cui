@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v1.1.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish GitHub release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" build
+
+      - name: Run full test + pipeline before publishing
+        run: |
+          pytest -q
+          python validation/benchmarks.py
+          python run_all.py
+
+      - name: Build distribution
+        run: python -m build
+
+      - name: Extract release notes from CHANGELOG
+        id: notes
+        env:
+          VERSION_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          VERSION="${VERSION_TAG#v}"
+          python - <<'PYEOF' > release_notes.md
+          import os, re
+          version = os.environ["VERSION_TAG"].lstrip("v")
+          text = open("CHANGELOG.md").read()
+          pattern = rf"## \[{re.escape(version)}\][^\n]*\n(.*?)(?=\n## \[|\Z)"
+          m = re.search(pattern, text, re.S)
+          print(m.group(1).strip() if m else f"Release {version}")
+          PYEOF
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: ${{ github.event.inputs.tag || github.ref_name }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+            assets/audit_chain.json
+            assets/figures/panel_h_inverse.png
+            assets/figures/panel_g_fad.png
+            assets/animations/cui_moisture_front.gif
