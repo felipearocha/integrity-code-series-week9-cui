@@ -42,9 +42,9 @@ class AuditChain:
             for k, v in d.items():
                 if isinstance(v, np.ndarray):
                     out[k] = v.tolist()
-                elif isinstance(v, (np.integer,)):
+                elif isinstance(v, np.integer):
                     out[k] = int(v)
-                elif isinstance(v, (np.floating,)):
+                elif isinstance(v, np.floating):
                     out[k] = float(v)
                 elif isinstance(v, dict):
                     out[k] = _s(v)

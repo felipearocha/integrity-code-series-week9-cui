@@ -29,7 +29,7 @@ repos:
     rev: v2.3.0
     hooks:
       - id: codespell
-        args: ["-L", "ans,nd,te,thi,fro,ot"]
+        args: ["-L", "ans,nd,te,thi,fro,ot,matric"]   # "matric potential" is a real term in unsaturated porous-media physics
         exclude: "^(assets|notebooks|week9_brief_latex\\.html)/"
 
 ci:
