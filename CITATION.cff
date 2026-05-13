@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title: "Integrity Code Series - Week 9 - CUI Coupled Thermohygro-Electrochemical Simulation"
+message: "If you use this software, please cite it using the metadata below."
+type: software
+authors:
+  - family-names: Rocha
+    given-names: Felipe
+    affiliation: "Independent Researcher"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"  # TODO: replace once ORCID is provisioned
+repository-code: "https://github.com/felipearocha/integrity-code-series-week9-cui"
+url: "https://github.com/felipearocha/integrity-code-series-week9-cui"
+abstract: >
+  Three-way coupled physics-first simulator for Corrosion Under Insulation (CUI) on insulated carbon-steel process piping. Couples Fourier heat conduction through the insulation annulus, Philip-de Vries hygrothermal moisture transport driven by capillary and thermal gradients, and Butler-Volmer electrochemical corrosion kinetics at the steel surface. All three fields are advanced together via Strang second-order operator splitting. A DFOS-informed inverse problem recovers moisture source magnitude and location from outer-cladding temperature observations. Anchored to AMPP 2022 (CUI causes ~60% of refinery pipe leaks), API RP 583 critical temperature window (50-175C), and PHMSA Docket 2026-1520 (April 24, 2026). 151 tests, 5 analytical benchmarks.
+keywords:
+  - CUI
+  - corrosion under insulation
+  - thermohygro-electrochemical
+  - Strang splitting
+  - Philip-de Vries
+  - Fourier conduction
+  - Butler-Volmer
+  - DFOS
+  - distributed fiber optic sensing
+  - inverse problem
+  - API RP 583
+  - pipeline integrity
+  - PHMSA
+license: MIT
+version: "1.1.1"
+date-released: "2026-05-13"
+identifiers:
+  - type: url
+    value: "https://github.com/felipearocha/integrity-code-series-week9-cui/releases/tag/v1.1.1"
+    description: "GitHub release tag v1.1.1"
+  # After first Zenodo release, replace the doi block below with the real value:
+  # - type: doi
+  #   value: "10.5281/zenodo.XXXXXXX"
+  #   description: "Concept DOI (always resolves to latest version)"

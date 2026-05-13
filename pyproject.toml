@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ics2-week9-cui-thermohygro"
-version = "1.1.0"
+version = "1.1.1"
 description = "Coupled thermohygro-electrochemical CUI simulator with DFOS-informed inverse problem (Integrity Code Series, Week 9)."
 readme = "README.md"
 requires-python = ">=3.11"

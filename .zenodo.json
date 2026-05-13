@@ -1,0 +1,45 @@
+{
+  "title": "Integrity Code Series - Week 9 - CUI Coupled Thermohygro-Electrochemical Simulation",
+  "description": "<p>Three-way coupled physics-first simulator for Corrosion Under Insulation (CUI) on insulated carbon-steel process piping. Couples Fourier heat conduction through the insulation annulus, Philip-de Vries hygrothermal moisture transport driven by capillary and thermal gradients, and Butler-Volmer electrochemical corrosion kinetics at the steel surface. All three fields are advanced together via Strang second-order operator splitting. A DFOS-informed inverse problem recovers moisture source magnitude and location from outer-cladding temperature observations.</p><p>Anchored to AMPP 2022 (CUI causes ~60% of refinery pipe leaks), API RP 583 critical temperature window (50-175C), and PHMSA Docket 2026-1520 (April 24, 2026). 151 tests, 5 analytical benchmarks.</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Rocha, Felipe",
+      "affiliation": "Independent Researcher"
+    }
+  ],
+  "keywords": [
+    "CUI",
+    "corrosion under insulation",
+    "thermohygro-electrochemical",
+    "Strang splitting",
+    "Philip-de Vries",
+    "Fourier conduction",
+    "Butler-Volmer",
+    "DFOS",
+    "distributed fiber optic sensing",
+    "inverse problem",
+    "API RP 583",
+    "pipeline integrity",
+    "PHMSA"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/felipearocha/integrity-code-series-week9-cui",
+      "scheme": "url",
+      "resource_type": "software"
+    }
+  ],
+  "references": [
+    "API RP 583 (2014). Corrosion Under Insulation and Fireproofing.",
+    "Philip J.R., de Vries D.A. (1957). Moisture movement in porous materials under temperature gradients. Transactions, AGU 38(2): 222-232.",
+    "Strang G. (1968). On the construction and comparison of difference schemes. SIAM J. Numerical Analysis 5(3): 506-517.",
+    "AMPP (2022). Corrosion Under Insulation Industry Survey.",
+    "PHMSA Docket 2026-1520 (April 24, 2026). External corrosion threats on hazardous liquid pipelines."
+  ],
+  "language": "eng",
+  "version": "1.1.1"
+}
