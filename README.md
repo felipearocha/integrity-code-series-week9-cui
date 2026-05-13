@@ -1,6 +1,6 @@
 # ICS2 Week 9 — CUI Coupled Thermohygro-Electrochemical Simulation
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20172508.svg)](https://doi.org/10.5281/zenodo.20172508)
 
 [![CI](https://github.com/felipearocha/integrity-code-series-week9-cui/actions/workflows/ci.yml/badge.svg)](https://github.com/felipearocha/integrity-code-series-week9-cui/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
@@ -248,7 +248,7 @@ If this software contributes to your work, please cite both the software (this r
 
 **Software (archived release):**
 
-> Rocha, F. (2026). *Integrity Code Series - Week 9 - CUI Coupled Thermohygro-Electrochemical Simulation* (Version 1.1.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX
+> Rocha, F. (2026). *Integrity Code Series - Week 9 - CUI Coupled Thermohygro-Electrochemical Simulation* (Version 1.1.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.20172508
 
 **BibTeX:**
 
@@ -259,8 +259,8 @@ If this software contributes to your work, please cite both the software (this r
   year         = 2026,
   publisher    = {Zenodo},
   version      = {v1.1.1},
-  doi          = {10.5281/zenodo.XXXXXXX},
-  url          = {https://doi.org/10.5281/zenodo.XXXXXXX}
+  doi          = {10.5281/zenodo.20172508},
+  url          = {https://doi.org/10.5281/zenodo.20172508}
 }
 ```
 
@@ -268,8 +268,8 @@ The two DOIs Zenodo provides are:
 
 | DOI                                  | What it points to                                                  |
 |--------------------------------------|--------------------------------------------------------------------|
-| `10.5281/zenodo.XXXXXXX` (concept)   | Always resolves to the latest version - use this for citation.     |
-| `10.5281/zenodo.YYYYYYY` (version)   | Pinned to v1.1.1 specifically - use when reproducibility matters.  |
+| `10.5281/zenodo.20172508` (concept)   | Always resolves to the latest version - use this for citation.     |
+| `10.5281/zenodo.20172509` (version)   | Pinned to v1.1.1 specifically - use when reproducibility matters.  |
 
 A machine-readable citation file is also available in [`CITATION.cff`](CITATION.cff) - GitHub will display a "Cite this repository" widget at the top right of the repo page that exports BibTeX / APA / RIS automatically.
 
