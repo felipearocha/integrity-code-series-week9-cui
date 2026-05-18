@@ -272,4 +272,3 @@ The two DOIs Zenodo provides are:
 | `10.5281/zenodo.20172509` (version)   | Pinned to v1.1.1 specifically - use when reproducibility matters.  |
 
 A machine-readable citation file is also available in [`CITATION.cff`](CITATION.cff) - GitHub will display a "Cite this repository" widget at the top right of the repo page that exports BibTeX / APA / RIS automatically.
-
