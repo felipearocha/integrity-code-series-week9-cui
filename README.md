@@ -1,11 +1,11 @@
 # ICS2 Week 9 — CUI Coupled Thermohygro-Electrochemical Simulation
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20172508.svg)](https://doi.org/10.5281/zenodo.20172508)
-
 [![CI](https://github.com/felipearocha/integrity-code-series-week9-cui/actions/workflows/ci.yml/badge.svg)](https://github.com/felipearocha/integrity-code-series-week9-cui/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-151%20passing-brightgreen.svg)](#testing)
-[![License](https://img.shields.io/badge/license-Research--Educational-lightgrey.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![Tests: 154 passing](https://img.shields.io/badge/tests-154%20passing-brightgreen.svg)](tests)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20172508.svg)](https://doi.org/10.5281/zenodo.20172508)
 
 Three-way coupled physics-first simulator for **Corrosion Under Insulation (CUI)**
 on insulated carbon-steel process piping. Simulates moisture ingress through a
@@ -21,11 +21,12 @@ Part of an ongoing series of physics-first integrity simulators by Felipe Rocha:
 | # | Repo | Domain |
 |---|---|---|
 | Week 3 | [Integrity-code-series-3](https://github.com/felipearocha/Integrity-code-series-3) | F1 lap simulation (six coupled ODEs) |
-| Week 6 | [Integrity-code-series-week6-smartphone-galvanic](https://github.com/felipearocha/Integrity-code-series-week6-smartphone-galvanic) | Smartphone galvanic corrosion (Laplace + Butler-Volmer) |
+| Week 6 | [integrity-code-series-week6-smartphone-galvanic](https://github.com/felipearocha/Integrity-code-series-week6-smartphone-galvanic) | Smartphone galvanic corrosion (Laplace + Butler-Volmer) |
 | Week 7 | [integrity_code_series_week7_h2_lferw](https://github.com/felipearocha/integrity_code_series_week7_h2_lferw) | LF-ERW H2 conversion (B31.12 + NACE TM0316) |
 | Week 8 | [integrity-code-series-week8-creep-fatigue-heater](https://github.com/felipearocha/integrity-code-series-week8-creep-fatigue-heater) | Creep-fatigue 9Cr-1Mo (Norton/Omega + Coffin-Manson) |
-| Week 9 | [integrity-code-series-week9-cui](https://github.com/felipearocha/integrity-code-series-week9-cui) | CUI thermohygro-electrochemical (3 PDEs, Strang) |
+| **Week 9** | **[integrity-code-series-week9-cui](https://github.com/felipearocha/integrity-code-series-week9-cui)** | **CUI thermohygro-electrochemical (3 PDEs, Strang) — this repo** |
 | Week 10 | [integrity-code-series-week-10_nnph_scc](https://github.com/felipearocha/integrity-code-series-week-10_nnph_scc) | NNpHSCC full-physics (Chen-Sutherby-Xing + BS 7910) |
+| Week 11 | [integrity-code-series-week11-erosion-corrosion-multiphase](https://github.com/felipearocha/integrity-code-series-week11-erosion-corrosion-multiphase) | Erosion-corrosion multiphase (NORSOK M-506 + DNV-RP-O501 + G119 + API 579) |
 | Bonus | [Vibration-Accelerated-Corrosion-Coupled-Mechano-Electrochemical-Simulation](https://github.com/felipearocha/Vibration-Accelerated-Corrosion-Coupled-Mechano-Electrochemical-Simulation) | Vibration-accelerated corrosion (SDOF + Butler-Volmer + Archard) |
 | Bonus | [synthetic-integrity-digital-twin-piml](https://github.com/felipearocha/synthetic-integrity-digital-twin-piml) | Physics-informed neural-network surrogate |
 | Bonus | [integrity-data-foundation](https://github.com/felipearocha/integrity-data-foundation) | Engineering data validation baseline |
@@ -38,7 +39,7 @@ cd REPO
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python run_all.py        # ~70 s on a laptop; produces 7 figures + 1 GIF + audit_chain.json
-pytest tests/ -v         # 151 tests
+pytest tests/ -v         # 154 tests
 python validation/benchmarks.py   # 5 analytical benchmarks
 ```
 
@@ -59,6 +60,8 @@ locations from outer cladding temperature measurements.
 ---
 
 ## Governing Equations
+
+Full rendered (MathJax) reference: **[docs/equations.html](docs/equations.html)** — open in any browser.
 
 ### Field 1 — Fourier Heat Conduction (Eq. 1)
 
@@ -167,6 +170,8 @@ integrity_code_series_week9_cui_thermohygro/
 │   ├── surrogate_gbr.py      GBR surrogate, parity metrics
 │   ├── fad_assessment.py     API 579-1 Level 2 FAD
 │   └── audit_chain.py        SHA-256 hash-linked run log
+├── docs/
+│   └── equations.html        Rendered (MathJax) governing-equations reference
 ├── validation/
 │   └── benchmarks.py
 ├── visualization/
@@ -177,6 +182,7 @@ integrity_code_series_week9_cui_thermohygro/
 ├── tests/
 │   ├── test_geometry_thermal.py
 │   ├── test_moisture_electrochemistry.py
+│   ├── test_extended.py
 │   └── test_remaining.py
 ├── assets/figures/           8 static PNG panels (300 DPI)
 ├── assets/animations/        cui_moisture_front.gif
@@ -214,7 +220,7 @@ integrity_code_series_week9_cui_thermohygro/
 
 ---
 
-## Cybersecurity Summary
+## Cybersecurity (STRIDE)
 
 STRIDE threat model applied to DFOS sensor network feeding inverse solver:
 
@@ -230,12 +236,41 @@ STRIDE threat model applied to DFOS sensor network feeding inverse solver:
 
 ---
 
+## Anti-Hallucination Note
+
+Every physical parameter carries an explicit provenance tag. Constants read directly from
+a standard or the literature are stated as such; parameters anchored to literature but not
+calibrated to a specific site are flagged `[ASSUMED]` in `src/constants.py` and collected
+in the **[ASSUMED] Parameter Flags** table above. In the Integrity Code Series tiering this
+maps to:
+
+- **T1 [SOURCE]** — values fixed by physics or a cited standard (the API 579-1 Level 2
+  Option B FAD curve, Faraday's law, the API RP 583 50-175 C CUI window).
+- **T2 [SOURCE]** — quantities derived from T1 inputs (effective insulation properties, the
+  golden-section Tikhonov recovery restricted to `S ∈ [0, S_ref]`).
+- **T3 [ASSUMED]** — practitioner / literature estimates that are not site-calibrated: the
+  mineral-wool moisture diffusivity `D_theta0` and slope `beta_theta`, the electrolyte
+  threshold `theta_crit`, the Fe-dissolution `i0_ref` / `E_a` / mixed overpotential, and the
+  `D_T` coupling form.
+
+No equation, constant, or citation in this repository or in `docs/equations.html` is
+introduced beyond what the model actually implements.
+
+---
+
+## Disclaimer
+
+Research tool only. Not for design, fitness-for-service, or safety-critical decisions without site-specific calibration and independent PE review.
+
+Additionally: API RP 583, API 579-1, and PHMSA regulations take precedence over model
+output, and `[ASSUMED]` parameters must be validated against site-specific inspection data
+before any operational use.
+
+---
+
 ## License
 
-Research and educational use only. Not for operational fitness-for-service decisions
-without independent engineering review and site-specific validation.
-API RP 583, API 579-1, PHMSA regulations take precedence over model output.
-[ASSUMED] parameters must be validated against site-specific inspection data.
+MIT — Felipe Rocha. See [LICENSE](LICENSE).
 
 ---
 

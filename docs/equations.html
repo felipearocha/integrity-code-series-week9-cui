@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Integrity Code Series — Week 9 — Governing Equations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        tags: 'ams'
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --navy: #1b3a5c;
+      --steel: #4c80b0;
+      --red: #8c2318;
+      --teal: #2e7d7b;
+      --charcoal: #333333;
+      --gold: #8B6914;
+      --bg: #fbfbfb;
+      --card: #ffffff;
+      --border: #e2e6ec;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 24px 96px 24px;
+      color: var(--charcoal);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    header {
+      border-bottom: 2px solid var(--navy);
+      padding-bottom: 18px;
+      margin-bottom: 26px;
+    }
+    h1 { color: var(--navy); font-size: 26px; margin: 0 0 6px 0; }
+    .subtitle { color: var(--steel); font-size: 14px; margin: 0; }
+    h2 {
+      color: var(--navy);
+      border-left: 4px solid var(--teal);
+      padding-left: 12px;
+      margin-top: 38px;
+      font-size: 19px;
+    }
+    h3 { color: var(--charcoal); margin-top: 26px; margin-bottom: 6px; font-size: 15px; font-weight: 700; }
+    .eq-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin: 12px 0 18px 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .src { font-size: 12px; color: var(--gold); font-style: italic; margin: 6px 0 10px 0; }
+    .code-ref {
+      font-family: "SF Mono", "Consolas", "Menlo", monospace;
+      font-size: 11.5px;
+      color: var(--steel);
+      background: #f1f4f7;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 20px;
+      margin-bottom: 30px;
+    }
+    .toc ol { margin: 4px 0 0 0; padding-left: 22px; }
+    .toc a { color: var(--navy); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; color: var(--red); }
+    .note {
+      background: #fff8e6;
+      border-left: 3px solid var(--gold);
+      padding: 10px 14px;
+      margin: 14px 0;
+      font-size: 13px;
+      color: #5b4a1d;
+    }
+    .disclaimer {
+      margin-top: 50px;
+      padding: 16px 20px;
+      background: #fef0ee;
+      border-left: 3px solid var(--red);
+      font-size: 13px;
+      color: #6b2418;
+    }
+    footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Integrity Code Series — Week 9</h1>
+  <p class="subtitle">CUI Coupled Thermohygro-Electrochemical Simulation — Governing Equations Reference</p>
+  <p class="subtitle"><strong>Felipe Rocha</strong></p>
+</header>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#thermal">Fourier Heat Conduction (Eq. 1)</a></li>
+    <li><a href="#moisture">Philip-de Vries Hygrothermal Transport (Eq. 2)</a></li>
+    <li><a href="#ec">Butler-Volmer Electrochemical Kinetics (Eq. 3)</a></li>
+    <li><a href="#faraday">Wall Loss — Faraday's Law (Eq. 4)</a></li>
+    <li><a href="#strang">Strang Operator Splitting (Eq. 5)</a></li>
+    <li><a href="#inverse">Tikhonov Inverse Problem (Eq. 6)</a></li>
+    <li><a href="#mc">Monte Carlo / PoF (Eq. 9-10)</a></li>
+    <li><a href="#fad">FAD — API 579-1 Level 2 Option B (Eq. 12-13)</a></li>
+  </ol>
+</div>
+
+<div class="note">
+Every equation below is transcribed from this repository's README. Constants tagged
+<code>[ASSUMED]</code> are anchored to literature, not site-calibrated (see
+<span class="code-ref">src/constants.py</span> and the <strong>[ASSUMED] Parameter Flags</strong>
+table in the README). No equation, constant, or citation has been added beyond what the
+repository already states.
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="thermal">1. Field 1 — Fourier Heat Conduction (Eq. 1)</h2>
+
+<h3>1.1 Energy balance across the insulation annulus</h3>
+<div class="eq-card">
+$$
+\rho_{\text{eff}}(\theta_w)\,c_{p,\text{eff}}(\theta_w)\,\frac{\partial T}{\partial t}
+\;=\; \nabla\!\cdot\!\bigl(\lambda_{\text{eff}}(\theta_w)\,\nabla T\bigr) \;+\; Q_{\text{corr}}
+$$
+<p class="src">SOURCE: Fourier heat conduction; CUI critical window 50–175 °C per API RP 583 (process temperature 120 °C, see <span class="code-ref">src/constants.py → T_PROCESS</span>).</p>
+<p>Code: <span class="code-ref">src/thermal_field.py → build_thermal_system, thermal_step, lambda_eff, rho_cp_eff</span>.</p>
+</div>
+
+<h3>1.2 Boundary conditions</h3>
+<div class="eq-card">
+$$
+T(r_i) = T_{\text{process}} \tag{1a}
+$$
+$$
+-\lambda\,\frac{\partial T}{\partial r}\Big|_{\text{outer}}
+= h_{\text{conv}}\,(T - T_\infty) + \varepsilon\,\sigma\,(T^{4} - T_\infty^{4}) \tag{1b}
+$$
+$$
+\frac{\partial T}{\partial z}\Big|_{\text{ends}} = 0 \tag{1c}
+$$
+<p>(1a) inner-wall Dirichlet · (1b) Robin convective + radiative outer cladding · (1c) adiabatic axial ends. Cladding emissivity $\varepsilon$ <code>[ASSUMED]</code>, $h_{\text{conv}}$ <code>[ASSUMED]</code>.</p>
+<p>Code: <span class="code-ref">src/thermal_field.py → build_thermal_system</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="moisture">2. Field 2 — Philip-de Vries Hygrothermal Moisture Transport (Eq. 2)</h2>
+
+<h3>2.1 Coupled moisture and thermal diffusion</h3>
+<div class="eq-card">
+$$
+\frac{\partial \theta_w}{\partial t}
+\;=\; \nabla\!\cdot\!\bigl(D_\theta(\theta_w)\,\nabla \theta_w\bigr)
+\;+\; \nabla\!\cdot\!\bigl(D_T(\theta_w,T)\,\nabla T\bigr)
+$$
+<p class="src">SOURCE: Philip-de Vries hygrothermal moisture transport (name as used in the repository).</p>
+<p>Code: <span class="code-ref">src/moisture_field.py → moisture_step</span>.</p>
+</div>
+
+<h3>2.2 Constitutive coefficients and boundary conditions</h3>
+<div class="eq-card">
+$$
+D_\theta(\theta_w) = D_{\theta 0}\,e^{\,\beta_\theta \theta_w} \tag{2a}
+$$
+$$
+D_T(\theta_w, T) = D_{\text{vap,atm}}\,\xi(\theta_w)\,f(\theta_w, T) \tag{2b}
+$$
+$$
+\theta_w\big|_{\text{holiday}} = f\,\Theta_{\text{SAT}} + (1-f)\,\Theta_{\text{INIT}},
+\qquad f = \min\!\left(\frac{S_{\text{mag}}}{S_{\text{ref}}},\, 1\right) \tag{2c}
+$$
+$$
+J_w\!\cdot\! n\big|_{\text{intact}} = 0 \tag{2d}
+$$
+$$
+\theta_w\big|_{t=0} = \Theta_{\text{INIT}} \quad \text{[ASSUMED]} \tag{2e}
+$$
+<div class="note">The partial-holiday BC (2c) models the cladding defect as a fraction $f$ of the outer circumference at saturation; $S_{\text{mag}} = S_{\text{ref}}$ (default $S_{\text{REF}} = 10^{-6}\ \text{m}^3/\text{m}^3/\text{s}$) is a fully wet holiday, $S_{\text{mag}} = 0$ is intact cladding. Above $S_{\text{ref}}$ the BC saturates and $S_{\text{mag}}$ is non-identifiable from $T_{\text{clad}}$ alone, so the inverse problem (Eq. 6) is restricted to $S \in [0, S_{\text{ref}}]$.</div>
+<p class="src">SOURCE: $D_{\theta 0}$, $\beta_\theta$, and the $D_T$ coupling form are <code>[ASSUMED]</code> (mineral-wool / simplified Philip-de Vries literature, see <span class="code-ref">src/constants.py</span>).</p>
+<p>Code: <span class="code-ref">src/moisture_field.py → D_theta, D_T_coeff, apply_holiday_bc</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="ec">3. Field 3 — Butler-Volmer Electrochemical Kinetics (Eq. 3)</h2>
+
+<div class="eq-card">
+$$
+i_{\text{corr}} =
+\begin{cases}
+i_0(T)\left[\,e^{\,\alpha_a F \eta /(RT)} - e^{-\alpha_c F \eta /(RT)}\,\right], & \theta_w > \theta_{\text{crit}} \\[4pt]
+0, & \theta_w \le \theta_{\text{crit}}
+\end{cases}
+$$
+$$
+i_0(T) = i_{0,\text{ref}}\,\exp\!\left[-\frac{E_a}{R}\left(\frac{1}{T} - \frac{1}{T_{\text{ref}}}\right)\right] \tag{3a}
+$$
+<div class="note">Corrosion switches on only once the moisture volume fraction exceeds the electrolyte threshold $\theta_{\text{crit}} = 0.05$ (<code>[ASSUMED]</code>, API RP 583 qualitative guidance). Transfer coefficients $\alpha_a, \alpha_c$, exchange current density $i_{0,\text{ref}}$, activation energy $E_a$, and mixed overpotential $\eta$ are all <code>[ASSUMED]</code>.</div>
+<p class="src">SOURCE: Butler-Volmer kinetics with Arrhenius exchange-current density; constants <code>[ASSUMED]</code> per <span class="code-ref">src/constants.py</span>.</p>
+<p>Code: <span class="code-ref">src/electrochemistry.py → i_corr, i0</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="faraday">4. Wall Loss — Faraday's Law (Eq. 4)</h2>
+
+<div class="eq-card">
+$$
+\frac{dWT}{dt} = -\frac{M_{\text{Fe}}}{n\,F\,\rho_{\text{steel}}}\; i_{\text{corr}}(T, \theta_w)
+$$
+<p class="src">SOURCE: Faraday's law of electrolysis; $M_{\text{Fe}}$, $n$, $F$, $\rho_{\text{steel}}$ from <span class="code-ref">src/constants.py</span>.</p>
+<p>Code: <span class="code-ref">src/electrochemistry.py → wall_loss_rate, faraday_step</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="strang">5. Strang Operator Splitting (Eq. 5)</h2>
+
+<div class="eq-card">
+$$
+u^{\,n+1} = L_{\text{EC}}\!\left(\tfrac{\Delta t}{2}\right) \circ
+L_{\text{HY}}\!\left(\tfrac{\Delta t}{2}\right) \circ
+L_{\text{TH}}(\Delta t) \circ
+L_{\text{HY}}\!\left(\tfrac{\Delta t}{2}\right) \circ
+L_{\text{EC}}\!\left(\tfrac{\Delta t}{2}\right)\, u^{\,n}
+$$
+<p>Second-order symmetric splitting of the electrochemistry (EC), hygrothermal (HY), and thermal (TH) sub-operators.</p>
+<p class="src">SOURCE: Strang symmetric operator splitting.</p>
+<p>Code: <span class="code-ref">src/coupled_solver.py → run_coupled</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="inverse">6. Tikhonov Inverse Problem (Eq. 6)</h2>
+
+<div class="eq-card">
+$$
+\min_{S}\; J(S) = \bigl(T_{\text{obs}} - T_{\text{model}}(S)\bigr)^{2} + \lambda_{\text{reg}}\,S^{2},
+\qquad S \in [0, S_{\text{ref}}]
+$$
+<div class="note">Single-parameter 1D inverse for $S_{\text{mag}}$, solved by golden-section line search on $J(S)$. Recovery error is &lt;1% on the identifiable range $S \in [0, S_{\text{ref}}]$ for synthetic DFOS cases with 0.03 K measurement noise. Above $S_{\text{ref}}$ the model BC saturates and the inverse is non-injective by construction; a full adjoint formulation is out of scope.</div>
+<p class="src">SOURCE: Tikhonov-regularised least-squares inverse.</p>
+<p>Code: <span class="code-ref">src/inverse_problem.py → solve_inverse, misfit</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="mc">7. Monte Carlo / Probability of Failure (Eq. 9-10)</h2>
+
+<div class="eq-card">
+$$
+\xi = \{\, S_{\text{mag}},\, \theta_{\text{crit}},\, i_{0,\text{ref}},\, E_a,\, \lambda_{\text{eff}},\, L_{\text{defect}} \,\},
+\qquad N_{\text{MC}} = 10{,}000\ \text{(LHS)}
+$$
+$$
+\mathrm{PoF}(t^{*}) = \frac{1}{N}\sum_{k=1}^{N}
+\mathbf{1}\!\left[\, WT_k(t^{*}) > 0.20\, t_{\text{nom}} \,\right]
+$$
+<p>Uncertainty propagation over the six-parameter vector $\xi$ by Latin-hypercube sampling; failure is wall loss exceeding 20% of nominal wall thickness.</p>
+<p class="src">SOURCE: Latin-hypercube Monte Carlo; failure fraction $0.20$ from <span class="code-ref">src/constants.py → MAX_WL_FRAC</span>.</p>
+<p>Code: <span class="code-ref">src/monte_carlo.py → run_monte_carlo, latin_hypercube_sample, spearman_sensitivity</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="fad">8. Failure Assessment Diagram — API 579-1 Level 2 Option B (Eq. 12-13)</h2>
+
+<div class="eq-card">
+$$
+f(L_r) = \left[\,1 + 0.5\,L_r^{2}\,\right]^{-1/2}
+\left[\,0.3 + 0.7\,e^{-0.65\,L_r^{6}}\,\right]
+$$
+$$
+L_{r,\max} = 0.5\left(1 + \frac{\text{UTS}}{\text{SMYS}}\right)
+$$
+<p>Level 2 Option B FAD curve with cut-off $L_{r,\max}$; UTS and SMYS for X52 from <span class="code-ref">src/constants.py</span> ($K_{\text{mat}} = 70\ \text{MPa}\sqrt{\text{m}}$ <code>[ASSUMED]</code>).</p>
+<p class="src">SOURCE: API 579-1/ASME FFS-1 Level 2 Option B FAD.</p>
+<p>Code: <span class="code-ref">src/fad_assessment.py → fad_curve, Lr_max_value, assessment_point</span>.</p>
+</div>
+
+<div class="disclaimer">
+<strong>Disclaimer:</strong> Research tool only. Not for design, fitness-for-service, or safety-critical decisions without site-specific calibration and independent PE review. Equations and constants are transcribed from this repository's README; parameters not calibrated to a specific site are marked <code>[ASSUMED]</code>. API RP 583, API 579-1, and PHMSA regulations take precedence over model output. Outputs are SHA-256 hash-chained; verify with the audit chain in <span class="code-ref">src/audit_chain.py</span>.
+</div>
+
+<footer>
+  Integrity Code Series — Week 9 · Felipe Rocha · 154 / 154 tests passing · 5 analytical benchmarks<br>
+  Browse the rendered panels in <code>assets/</code> for visual results.
+</footer>
+
+</body>
+</html>
