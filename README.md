@@ -61,7 +61,43 @@ locations from outer cladding temperature measurements.
 
 ## Governing Equations
 
+[**view the full rendered reference**](https://htmlpreview.github.io/?https://github.com/felipearocha/integrity-code-series-week9-cui/blob/main/docs/equations.html)
+
 Full rendered (MathJax) reference: **[docs/equations.html](docs/equations.html)** — open in any browser.
+
+The eight headline governing equations, rendered natively on GitHub:
+
+**Field 1 — Fourier heat conduction (Eq. 1):**
+
+$$\rho_{\text{eff}}(\theta_w)\,c_{p,\text{eff}}(\theta_w)\,\frac{\partial T}{\partial t} \;=\; \nabla\!\cdot\!\bigl(\lambda_{\text{eff}}(\theta_w)\,\nabla T\bigr) \;+\; Q_{\text{corr}}$$
+
+**Field 2 — Philip-de Vries hygrothermal moisture transport (Eq. 2):**
+
+$$\frac{\partial \theta_w}{\partial t} \;=\; \nabla\!\cdot\!\bigl(D_\theta(\theta_w)\,\nabla \theta_w\bigr) \;+\; \nabla\!\cdot\!\bigl(D_T(\theta_w,T)\,\nabla T\bigr)$$
+
+**Field 3 — Butler-Volmer electrochemical kinetics (Eq. 3):**
+
+$$i_{\text{corr}} = \begin{cases} i_0(T)\left[\,e^{\,\alpha_a F \eta /(RT)} - e^{-\alpha_c F \eta /(RT)}\,\right], & \theta_w > \theta_{\text{crit}} \\[4pt] 0, & \theta_w \le \theta_{\text{crit}} \end{cases}$$
+
+**Wall loss — Faraday's law (Eq. 4):**
+
+$$\frac{dWT}{dt} = -\frac{M_{\text{Fe}}}{n\,F\,\rho_{\text{steel}}}\; i_{\text{corr}}(T, \theta_w)$$
+
+**Strang operator splitting (Eq. 5):**
+
+$$u^{\,n+1} = L_{\text{EC}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\text{HY}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\text{TH}}(\Delta t) \circ L_{\text{HY}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\text{EC}}\!\left(\tfrac{\Delta t}{2}\right)\, u^{\,n}$$
+
+**Tikhonov inverse problem (Eq. 6):**
+
+$$\min_{S}\; J(S) = \bigl(T_{\text{obs}} - T_{\text{model}}(S)\bigr)^{2} + \lambda_{\text{reg}}\,S^{2}, \qquad S \in [0, S_{\text{ref}}]$$
+
+**Monte Carlo / probability of failure (Eq. 9-10):**
+
+$$\mathrm{PoF}(t^{*}) = \frac{1}{N}\sum_{k=1}^{N} \mathbf{1}\!\left[\, WT_k(t^{*}) > 0.20\, t_{\text{nom}} \,\right]$$
+
+**Failure Assessment Diagram — API 579-1 Level 2 Option B (Eq. 12-13):**
+
+$$f(L_r) = \left[\,1 + 0.5\,L_r^{2}\,\right]^{-1/2} \left[\,0.3 + 0.7\,e^{-0.65\,L_r^{6}}\,\right]$$
 
 ### Field 1 — Fourier Heat Conduction (Eq. 1)
 
