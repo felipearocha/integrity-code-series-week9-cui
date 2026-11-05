@@ -30,14 +30,14 @@ CLAD_THICK = 0.0009  # m  aluminium cladding
 CLAD_K = 200.0  # W m^-1 K^-1
 CLAD_EMISS = 0.05  # emissivity [ASSUMED]
 
-T_PROCESS = 393.15  # K  120 C (within API RP 583 50-175 C window)
+T_PROCESS = 393.15  # K  120 C (within the commonly cited 50-175 C CUI range)
 T_AMBIENT = 293.15  # K  20 C
 H_CONV = 10.0  # W m^-2 K^-1 [ASSUMED]
 P_OP_BAR = 10.0  # bar
 
 THETA_INIT = 0.01  # vol fraction dry insulation [ASSUMED]
 THETA_SAT = 0.80  # vol fraction saturated [ASSUMED]
-THETA_CRIT = 0.05  # vol fraction electrolyte threshold [ASSUMED] API RP 583
+THETA_CRIT = 0.05  # vol fraction electrolyte threshold [ASSUMED]
 D_VAP_ATM = 2.6e-5  # m^2 s^-1  vapour diffusivity in air
 WATER_RHO = 1000.0  # kg m^-3
 WATER_M = 18.015e-3  # kg mol^-1

@@ -144,7 +144,7 @@ $$
 \rho_{\text{eff}}(\theta_w)\,c_{p,\text{eff}}(\theta_w)\,\frac{\partial T}{\partial t}
 \;=\; \nabla\!\cdot\!\bigl(\lambda_{\text{eff}}(\theta_w)\,\nabla T\bigr) \;+\; Q_{\text{corr}}
 $$
-<p class="src">SOURCE: Fourier heat conduction; CUI critical window 50–175 °C per API RP 583 (process temperature 120 °C, see <span class="code-ref">src/constants.py → T_PROCESS</span>).</p>
+<p class="src">SOURCE: Fourier heat conduction; commonly cited CUI range of 50–175 °C (process temperature 120 °C, see <span class="code-ref">src/constants.py → T_PROCESS</span>).</p>
 <p>Code: <span class="code-ref">src/thermal_field.py → build_thermal_system, thermal_step, lambda_eff, rho_cp_eff</span>.</p>
 </div>
 
@@ -265,14 +265,14 @@ $$
 
 <div class="eq-card">
 $$
-\xi = \{\, S_{\text{mag}},\, \theta_{\text{crit}},\, i_{0,\text{ref}},\, E_a,\, \lambda_{\text{eff}},\, L_{\text{defect}} \,\},
+\xi = \{\, S_{\text{mag}},\, \theta_{\text{crit}},\, i_{0,\text{ref}},\, E_a \,\},
 \qquad N_{\text{MC}} = 10{,}000\ \text{(LHS)}
 $$
 $$
 \mathrm{PoF}(t^{*}) = \frac{1}{N}\sum_{k=1}^{N}
-\mathbf{1}\!\left[\, WT_k(t^{*}) > 0.20\, t_{\text{nom}} \,\right]
+\mathbf{1}\!\left[\, W_{L,k}(t^{*}) \ge 0.20\, t_{\text{nom}} \,\right]
 $$
-<p>Uncertainty propagation over the six-parameter vector $\xi$ by Latin-hypercube sampling; failure is wall loss exceeding 20% of nominal wall thickness.</p>
+<p>Uncertainty propagation over the four-parameter vector $\xi$, using the closed form in <span class="code-ref">_wl_from_params</span>, by Latin-hypercube sampling; failure is wall loss exceeding 20% of nominal wall thickness.</p>
 <p class="src">SOURCE: Latin-hypercube Monte Carlo; failure fraction $0.20$ from <span class="code-ref">src/constants.py → MAX_WL_FRAC</span>.</p>
 <p>Code: <span class="code-ref">src/monte_carlo.py → run_monte_carlo, latin_hypercube_sample, spearman_sensitivity</span>.</p>
 </div>
@@ -298,7 +298,7 @@ $$
 </div>
 
 <footer>
-  Integrity Code Series — Week 9 · Felipe Rocha · 154 / 154 tests passing · 5 analytical benchmarks<br>
+  Integrity Code Series — Week 9 · Felipe Rocha · 156 / 156 tests passing · 5 analytical benchmarks<br>
   Browse the rendered panels in <code>assets/</code> for visual results.
 </footer>
 

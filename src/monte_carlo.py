@@ -1,6 +1,9 @@
 """
 Monte Carlo / LHS uncertainty quantification for Week 9 CUI.
 
+Samples use the closed form _wl_from_params, not the coupled solver. It matches
+the coupled baseline within 2% at nominal parameters.
+
 Parameters sampled:
   S_mag      : moisture source magnitude [m^3/m^3/s]  LogNormal
   theta_crit : electrolyte threshold [vol frac]        Uniform

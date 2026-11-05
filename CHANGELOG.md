@@ -13,17 +13,31 @@ this project adheres to [Semantic Versioning](https://semver.org/).
   2D or the inverse as recovering source location: the solvers are 1D radial
   and the inverse recovers magnitude only.
 - README states that the Monte Carlo uses the closed-form `_wl_from_params`,
-  not the coupled solver, and that `L_defect` is sampled but has no effect.
+  not the coupled solver.
+- Counted the model as 2 PDEs plus Butler-Volmer kinetics, not 3 PDEs.
+- Replaced the unverified AMPP survey reference with Cuervo & McQueen (2022)
+  and stopped attributing the 50-175 C range to API RP 583.
 - Corrected the description of PHMSA-2026-1520: it clarifies hazardous liquid
   integrity management guidance and does not address external corrosion threats.
 - Corrected the stable moisture timestep in `EXECUTION_ORDER.md` (0.12 days),
-  the figure count (7), test counts (154) and the `cd REPO` placeholder.
+  the figure count (7), test counts (156) and the `cd REPO` placeholder.
+
+### Fixed (model)
+
+- FAD curve: the code used the BS 7910 Option 1 prefactor with the API exponent.
+  It now uses the API 579-1 Level 2 curve as quoted by Bourga et al. (2016).
+  `Kr(Lr = 1)` 0.5433 -> 0.5723; no assessment point changes status.
+- Monte Carlo: removed `L_defect` (never used) and the `lambda_eff` proxy, which
+  the coupled solver does not support. Sampled parameters 6 -> 4. Closed form at
+  nominal parameters 0.1032 -> 0.1376 mm against 0.1360 mm from the coupled
+  baseline. P50 0.0934 -> 0.1374 mm, P95 0.3151 -> 0.4328 mm, PoF 0.0000 -> 0.0002.
 
 ### Changed
 
 - LICENSE replaced with canonical MIT, matching the Zenodo deposit (2026-05-18).
 - Dependabot: `increase-if-necessary` for pip, one grouped PR for GitHub
   Actions. Bumped checkout, setup-python, upload-artifact and codecov-action.
+- `pip-audit` audits `requirements.txt` and now fails the job on findings.
 
 ## [1.1.1] — 2026-05-13
 

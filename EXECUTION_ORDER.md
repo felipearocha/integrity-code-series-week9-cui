@@ -9,7 +9,7 @@ Python >= 3.11 required.
 ## Step-by-step
 ```bash
 python run_all.py          # Steps 1-9 sequentially (about 1-2 min on a laptop)
-pytest tests/ -v           # 154 tests
+pytest tests/ -v           # 156 tests
 python validation/benchmarks.py  # Standalone analytical benchmarks
 ```
 
