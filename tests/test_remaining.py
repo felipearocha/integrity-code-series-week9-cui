@@ -148,7 +148,6 @@ class TestMonteCarlo:
             "i0_ref",
             "E_a",
             "lambda_eff",
-            "L_defect",
         }
 
     def test_spearman_in_range(self, mc):
@@ -200,7 +199,7 @@ class TestSurrogate:
         assert surr["mae_test"] >= 0
 
     def test_feature_importance_length(self, surr):
-        assert len(surr["feature_importance"]) == 6
+        assert len(surr["feature_importance"]) == 5
 
     def test_predictions_non_negative(self, surr):
         from src.monte_carlo import run_monte_carlo
@@ -310,7 +309,6 @@ class TestVisualizationOutputs:
             "i0_ref": 0.5,
             "E_a": 0.4,
             "lambda_eff": -0.1,
-            "L_defect": 0.05,
         }
         out = str(tmp_path / "figs" / "test_sensitivity.png")
         os.makedirs(os.path.dirname(out), exist_ok=True)
