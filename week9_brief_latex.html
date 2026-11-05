@@ -594,10 +594,10 @@
   $$
   $$
     f(L_r) =
-    \left[1 + 0.5\,L_r^2\right]^{-1/2}
+    \left[1 - 0.14\,L_r^2\right]
     \cdot
     \left[0.3 + 0.7\,\exp\!\left(-0.65\,L_r^6\right)\right]
-    \quad\text{(API 579-1 Option B curve)}
+    \quad\text{(API 579-1 Level 2 curve)}
     \tag{13}
   $$
   <div class="eq-note">
@@ -669,7 +669,7 @@
 <table>
   <tr><th>Concern</th><th>Status</th><th>Evidence</th></tr>
   <tr><td>API RP 583 temperature window (50&ndash;175&deg;C)</td><td class="gate-pass">PASS</td><td>Baseline at 120&deg;C reproduces $i_{\text{corr}}$ peak; deterministic 10-yr WT $= 0.136$ mm.</td></tr>
-  <tr><td>FAD uses API 579-1 Level 2 Option B</td><td class="gate-pass">PASS</td><td>$f(L_r)$ matches Eq.&nbsp;(13); $L_{r,\max}$ derived from X52 SMYS/UTS; trajectory plotted in panel&nbsp;G.</td></tr>
+  <tr><td>FAD uses API 579-1 Level 2</td><td class="gate-pass">PASS</td><td>$f(L_r)$ matches Eq.&nbsp;(13); $L_{r,\max}$ derived from X52 SMYS/UTS; trajectory plotted in panel&nbsp;G.</td></tr>
   <tr><td>Strang splitting 2nd-order in time</td><td class="gate-pass">PASS</td><td>EC&middot;HY&middot;TH&middot;HY&middot;EC schedule with EC at $\Delta t/2$, TH at $\Delta t$; CN sub-operators are $\mathcal{O}(\Delta t^2)$.</td></tr>
   <tr><td>Analytical benchmarks close</td><td class="gate-pass">PASS</td><td>Faraday 0.034 %, Arrhenius 0 %, Butler-Volmer&rarr;Tafel 0 %, $D_\theta$ scaling 0 %, steady-state $T_{\text{outer}}$ 0.79 K vs slab approximation.</td></tr>
   <tr><td>Inverse problem identifiable on stated range</td><td class="gate-pass">PASS</td><td>Recovery error &lt; 1 % on $S \in [0, S_{\text{ref}}]$ in 3/3 synthetic cases; locked as regression test. Above $S_{\text{ref}}$ the BC saturates &mdash; explicitly out of identifiable range.</td></tr>

@@ -218,6 +218,12 @@ class TestFAD:
 
         assert Lr_max_value() > 1.0
 
+    def test_fad_curve_level2_hand_value(self):
+        # Hand calculation at Lr = 1: (1 - 0.14) * (0.3 + 0.7 * exp(-0.65)) = 0.86 * 0.66543 = 0.5723
+        from src.fad_assessment import fad_curve
+
+        assert abs(fad_curve(np.array([1.0]))[0] - 0.5723) < 1e-3
+
     def test_fad_at_0_near_1(self):
         from src.fad_assessment import fad_curve
 
