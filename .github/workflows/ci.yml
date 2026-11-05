@@ -147,7 +147,6 @@ jobs:
           pip install pip-audit
       - name: Audit dependencies
         run: pip-audit -r requirements.txt --strict
-        continue-on-error: true
 
   ci-pass:
     name: All checks passed
