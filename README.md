@@ -280,7 +280,7 @@ audit chain is implemented here; the other mitigations are deployment recommenda
 
 ---
 
-## Anti-Hallucination Note
+## Provenance Note
 
 Parameters anchored to literature but not calibrated to a specific site are flagged
 `[ASSUMED]` in `src/constants.py` and collected in the **[ASSUMED] Parameter Flags** table
