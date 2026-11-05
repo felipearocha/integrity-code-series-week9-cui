@@ -147,8 +147,17 @@ class TestMonteCarlo:
             "theta_crit",
             "i0_ref",
             "E_a",
-            "lambda_eff",
         }
+
+    def test_closed_form_matches_coupled_baseline(self):
+        # The closed form must reproduce the coupled solver at nominal parameters.
+        from src.constants import EA_FE, I0_REF, THETA_CRIT
+        from src.coupled_solver import run_baseline
+        from src.monte_carlo import _wl_from_params
+
+        coupled = run_baseline()["wl"][-1]
+        closed = _wl_from_params(1e-6, THETA_CRIT, I0_REF, EA_FE, 10.0)
+        assert abs(closed - coupled) / coupled < 0.02
 
     def test_spearman_in_range(self, mc):
         from src.monte_carlo import spearman_sensitivity
@@ -199,7 +208,7 @@ class TestSurrogate:
         assert surr["mae_test"] >= 0
 
     def test_feature_importance_length(self, surr):
-        assert len(surr["feature_importance"]) == 5
+        assert len(surr["feature_importance"]) == 4
 
     def test_predictions_non_negative(self, surr):
         from src.monte_carlo import run_monte_carlo
@@ -308,7 +317,6 @@ class TestVisualizationOutputs:
             "theta_crit": -0.2,
             "i0_ref": 0.5,
             "E_a": 0.4,
-            "lambda_eff": -0.1,
         }
         out = str(tmp_path / "figs" / "test_sensitivity.png")
         os.makedirs(os.path.dirname(out), exist_ok=True)

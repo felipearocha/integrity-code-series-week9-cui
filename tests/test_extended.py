@@ -248,10 +248,10 @@ class TestEdgeCases:
         from src.monte_carlo import _u_to_params, latin_hypercube_sample, run_monte_carlo
         from src.surrogate_gbr import build_feature_matrix
 
-        u = latin_hypercube_sample(20, 5)
+        u = latin_hypercube_sample(20, 4)
         params = _u_to_params(u)
         X = build_feature_matrix(params)
-        assert X.shape == (20, 5)
+        assert X.shape == (20, 4)
 
 
 # ── Integration chain ─────────────────────────────────────────────────────

@@ -6,7 +6,6 @@ Parameters sampled:
   theta_crit : electrolyte threshold [vol frac]        Uniform
   i0_ref     : exchange current density [A/m^2]        LogNormal
   E_a        : activation energy [J/mol]               Normal
-  lambda_eff : insulation conductivity [W/m/K]         Uniform
 """
 
 import numpy as np
@@ -36,17 +35,15 @@ def _u_to_params(u):
     theta_crit = sp_uniform.ppf(u[:, 1], loc=0.03, scale=0.07)
     i0_ref = lognorm.ppf(u[:, 2], s=0.5, scale=I0_REF)
     E_a = norm.ppf(u[:, 3], loc=EA_FE, scale=5000.0)
-    lambda_eff = sp_uniform.ppf(u[:, 4], loc=0.030, scale=0.030)
     return {
         "S_mag": S_mag,
         "theta_crit": theta_crit,
         "i0_ref": i0_ref,
         "E_a": E_a,
-        "lambda_eff": lambda_eff,
     }
 
 
-def _wl_from_params(S_mag_k, theta_crit_k, i0_ref_k, E_a_k, lambda_eff_k, t_yr):
+def _wl_from_params(S_mag_k, theta_crit_k, i0_ref_k, E_a_k, t_yr):
     """
     Fast analytical wall loss estimate for MC inner loop.
     Avoids running full PDE per sample — uses physics-based closed-form.
@@ -81,15 +78,13 @@ def _wl_from_params(S_mag_k, theta_crit_k, i0_ref_k, E_a_k, lambda_eff_k, t_yr):
     v_ms = bv * FE_M / (FE_N * FARADAY * STEEL_RHO)
     wl_mm = v_ms * 1e3 * t_corr_yr * SEC_PER_YR
 
-    # Scale by lambda (thermal effect proxy)
-    lambda_scale = max(0.030 / max(lambda_eff_k, 1e-4), 0.5)
-    return float(np.clip(wl_mm * lambda_scale, 0, PIPE_WT * 1000))
+    return float(np.clip(wl_mm, 0, PIPE_WT * 1000))
 
 
 def run_monte_carlo(n_samples=10_000, t_assess_yr=None, n_t=40, seed=42):
     if t_assess_yr is None:
         t_assess_yr = DESIGN_LIFE
-    u = latin_hypercube_sample(n_samples, 5, seed)
+    u = latin_hypercube_sample(n_samples, 4, seed)
     params = _u_to_params(u)
     t_years = np.linspace(0, t_assess_yr, n_t)
 
@@ -105,7 +100,6 @@ def run_monte_carlo(n_samples=10_000, t_assess_yr=None, n_t=40, seed=42):
                     params["theta_crit"][k],
                     params["i0_ref"][k],
                     params["E_a"][k],
-                    params["lambda_eff"][k],
                     t,
                 )
                 for t in t_years

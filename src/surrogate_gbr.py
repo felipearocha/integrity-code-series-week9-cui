@@ -11,12 +11,11 @@ FEATURE_NAMES = [
     "theta_crit [-]",
     "i0_ref [A/m2]",
     "E_a [J/mol]",
-    "lambda_eff [W/mK]",
 ]
 
 
 def build_feature_matrix(params):
-    keys = ["S_mag", "theta_crit", "i0_ref", "E_a", "lambda_eff"]
+    keys = ["S_mag", "theta_crit", "i0_ref", "E_a"]
     return np.column_stack([params[k] for k in keys])
 
 
