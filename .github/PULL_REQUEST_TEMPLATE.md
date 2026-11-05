@@ -11,7 +11,7 @@
 
 ## Validation
 
-- [ ] `pytest tests/ -v` — all 151+ tests pass locally
+- [ ] `pytest tests/ -v` — all 154 tests pass locally
 - [ ] `python validation/benchmarks.py` — all 5 benchmarks pass
 - [ ] `python run_all.py` — pipeline completes; figures regenerate cleanly
 - [ ] `ruff check .` and `ruff format --check .` clean

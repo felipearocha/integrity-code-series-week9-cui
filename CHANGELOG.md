@@ -5,6 +5,33 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed (docs/metadata) - repository audit
+
+- README, `CITATION.cff` and `.zenodo.json` no longer describe the model as
+  2D or the inverse as recovering source location: the solvers are 1D radial
+  and the inverse recovers magnitude only.
+- README states that the Monte Carlo uses the closed-form `_wl_from_params`,
+  not the coupled solver, and that `L_defect` is sampled but has no effect.
+- Corrected the description of PHMSA-2026-1520: it clarifies hazardous liquid
+  integrity management guidance and does not address external corrosion threats.
+- Corrected the stable moisture timestep in `EXECUTION_ORDER.md` (0.12 days),
+  the figure count (7), test counts (154) and the `cd REPO` placeholder.
+
+### Changed
+
+- LICENSE replaced with canonical MIT, matching the Zenodo deposit (2026-05-18).
+- Dependabot: `increase-if-necessary` for pip, one grouped PR for GitHub
+  Actions. Bumped checkout, setup-python, upload-artifact and codecov-action.
+
+## [1.1.1] — 2026-05-13
+
+### Added
+
+- Zenodo metadata (`.zenodo.json`), DOI badge and How to Cite section.
+- Integrity Code Series cross-link section in `README.md`.
+
 ## [1.1.0] — 2026-04-28
 
 ### Fixed
