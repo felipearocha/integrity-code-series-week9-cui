@@ -7,6 +7,7 @@ Boundary:
   inner ins node: zero-flux (pipe surface does not store moisture)
 """
 
+# [SOURCE: Philip & de Vries 1957] for the transport form; D_T is a simplified [ASSUMED] form.
 import numpy as np
 
 from src.constants import BETA_THETA, D_THETA0, THETA_SAT

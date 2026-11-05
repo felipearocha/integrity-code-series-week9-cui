@@ -1,5 +1,6 @@
 """
 Strang operator splitting — CUI thermohygro-electrochemical simulation.
+[SOURCE: Strang 1968]
 
 Outer timestep: dt_outer (30 days nominal)
 Inner moisture sub-stepping: moisture_step uses stable explicit Euler sub-steps.

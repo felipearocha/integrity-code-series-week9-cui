@@ -1,4 +1,4 @@
-"""GBR surrogate for outer-cladding temperature vs source parameters."""
+"""GBR surrogate for 10-year wall loss vs the sampled Monte Carlo parameters."""
 
 import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor
@@ -11,13 +11,11 @@ FEATURE_NAMES = [
     "theta_crit [-]",
     "i0_ref [A/m2]",
     "E_a [J/mol]",
-    "lambda_eff [W/mK]",
-    "L_defect [-]",
 ]
 
 
 def build_feature_matrix(params):
-    keys = ["S_mag", "theta_crit", "i0_ref", "E_a", "lambda_eff", "L_defect"]
+    keys = ["S_mag", "theta_crit", "i0_ref", "E_a"]
     return np.column_stack([params[k] for k in keys])
 
 

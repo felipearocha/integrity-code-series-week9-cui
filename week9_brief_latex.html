@@ -262,7 +262,7 @@
 
 <div class="news-card">
   <div class="news-source">PHMSA &mdash; Federal Register, April 24 2026 (TODAY)</div>
-  Direct Final Rule Docket PHMSA-2026-1520, Amdt. 195-118: corrections and clarifications to integrity management guidance for hazardous liquid and CO&#x2082; pipelines. Effective August 3, 2026. External corrosion threats explicitly in scope.
+  Direct Final Rule Docket PHMSA-2026-1520, Amdt. 195-118: corrections and clarifications to integrity management guidance for hazardous liquid and CO&#x2082; pipelines. Effective August 3, 2026.
 </div>
 <div class="news-card">
   <div class="news-source">PHMSA &mdash; Federal Register, April 24 2026 (TODAY)</div>
@@ -274,7 +274,7 @@
 </div>
 <div class="news-card">
   <div class="news-source">Materials Performance &mdash; February 2026 / ASTM G189 / AMPP TM21549</div>
-  API RP 583 identifies 50&ndash;175&deg;C as the critical CUI temperature window for carbon steel. CUI responsible for ~60% of pipe leaks in documented Texas refinery case study (AMPP 2022 proceeding). ASTM G189 wet-dry cycling protocol now provides standardized test basis for CUI mitigation qualification.
+  CUI on carbon steel is commonly cited as most severe at 50&ndash;175&deg;C. CUI responsible for ~60% of pipe leaks in a Texas refinery case study (Cuervo &amp; McQueen, AMPP 2022). ASTM G189 wet-dry cycling protocol now provides standardized test basis for CUI mitigation qualification.
 </div>
 
 <!-- ══════════════════════════════════════════════════════════ -->
@@ -542,11 +542,11 @@
     \widehat{\text{WT}}(\boldsymbol{\xi})
     \approx \text{WT}_{\text{model}}(\boldsymbol{\xi}),
     \qquad
-    \boldsymbol{\xi} = \{S_{\text{mag}},\, \theta_{\text{crit}},\, i_{0,\text{ref}},\, E_a,\, \lambda_{\text{eff}},\, L_{\text{defect}}\}
+    \boldsymbol{\xi} = \{S_{\text{mag}},\, \theta_{\text{crit}},\, i_{0,\text{ref}},\, E_a\}
     \tag{8}
   $$
   <div class="eq-note">
-    Out-of-sample $R^2 = 0.93$, MAE $\approx 0.02$ mm at the 10-year assessment horizon (run-time numbers from <code>run_all.py [4/9]</code>). The surrogate is not part of the inverse loop; the inverse calls the full forward model directly. Every surrogate prediction is clipped to the physical feasibility window $[0, t_{\text{nom}} \cdot 10^3]$ mm.
+    Out-of-sample $R^2 = 0.94$, MAE $\approx 0.03$ mm at the 10-year assessment horizon (run-time numbers from <code>run_all.py [4/9]</code>). The surrogate is not part of the inverse loop; the inverse calls the full forward model directly. Every surrogate prediction is clipped to the physical feasibility window $[0, t_{\text{nom}} \cdot 10^3]$ mm.
   </div>
 </div>
 
@@ -557,17 +557,17 @@
   <div class="eq-label">Latin Hypercube sampling space</div>
   $$
     \boldsymbol{\xi} = \bigl\{
-      S_0,\; \theta_{\text{crit}},\; i_{0,\text{ref}},\; E_a,\; \lambda_{\text{eff}},\; L_{\text{defect}}
+      S_0,\; \theta_{\text{crit}},\; i_{0,\text{ref}},\; E_a
     \bigr\}, \qquad N_{\text{MC}} = 10{,}000
     \tag{9}
   $$
   $$
-    \text{PoF}(t^*) = P\!\left[\text{WT}(t^*) > \text{WT}_{\text{limit}}\right]
-    = \frac{1}{N_{\text{MC}}}\sum_{k=1}^{N_{\text{MC}}} \mathbf{1}\!\left[\text{WT}_k(t^*) > 0.20\, t_{\text{nom}}\right]
+    \text{PoF}(t^*) = P\!\left[W_L(t^*) \ge W_{L,\text{limit}}\right]
+    = \frac{1}{N_{\text{MC}}}\sum_{k=1}^{N_{\text{MC}}} \mathbf{1}\!\left[W_{L,k}(t^*) \ge 0.20\, t_{\text{nom}}\right]
     \tag{10}
   $$
   <div class="eq-note">
-    Right-censoring: runs where $\text{WT}_k > t_{\text{nom}}$ (perforation) before $t^*$ are flagged, annotated in the CDF, and separated as a hatched bar in the histogram. They are not discarded.<br>
+    Right-censoring: runs where $W_{L,k} > t_{\text{nom}}$ (perforation) before $t^*$ are flagged, annotated in the CDF, and separated as a hatched bar in the histogram. They are not discarded.<br>
     <strong>Implementation note:</strong> the MC inner loop uses a closed-form Faraday integration (<code>_wl_from_params</code> in <code>src/monte_carlo.py</code>) rather than the full coupled PDE, for tractability at $N=10^4$. This is the $\boldsymbol{\xi}$&rarr;$\text{WT}$ map captured by the GBR surrogate (Eq.&nbsp;8). The deterministic baseline and the inverse problem (&sect;3, &sect;4) use the full coupled solver.
   </div>
 </div>
@@ -594,10 +594,10 @@
   $$
   $$
     f(L_r) =
-    \left[1 + 0.5\,L_r^2\right]^{-1/2}
+    \left[1 - 0.14\,L_r^2\right]
     \cdot
     \left[0.3 + 0.7\,\exp\!\left(-0.65\,L_r^6\right)\right]
-    \quad\text{(API 579-1 Option B curve)}
+    \quad\text{(API 579-1 Level 2 curve)}
     \tag{13}
   $$
   <div class="eq-note">
@@ -639,7 +639,7 @@
   <tr>
     <td>Test coverage</td>
     <td>n/a</td>
-    <td>154 unit + integration tests, 5 analytical benchmarks (Faraday 0.034 %, Arrhenius 0 %)</td>
+    <td>156 unit + integration tests, 5 analytical benchmarks (Faraday 0.034 %, Arrhenius 0 %)</td>
     <td><span class="badge">New</span></td>
   </tr>
 </table>
@@ -649,7 +649,7 @@
 <p>Values mirror <code>src/constants.py</code> in v1.1.0. Each must be validated against site-specific inspection data before any operational use.</p>
 <table>
   <tr><th>Parameter</th><th>Value</th><th>Basis</th></tr>
-  <tr><td>$\theta_{\text{crit}}$</td><td>0.05 vol fraction</td><td>API RP 583 qualitative guidance <span class="assumed">[ASSUMED]</span></td></tr>
+  <tr><td>$\theta_{\text{crit}}$</td><td>0.05 vol fraction</td><td>Electrolyte threshold <span class="assumed">[ASSUMED]</span></td></tr>
   <tr><td>$\theta_{\text{init}}$</td><td>0.01 vol fraction</td><td>Dry insulation initial state <span class="assumed">[ASSUMED]</span></td></tr>
   <tr><td>$\theta_{\text{sat}}$</td><td>0.80 vol fraction</td><td>Saturated mineral wool <span class="assumed">[ASSUMED]</span></td></tr>
   <tr><td>$D_{\theta,0}$ (mineral wool)</td><td>$6.0\times10^{-11}$ m&#x00B2; s&#x207B;&#x00B9;</td><td>Porous-media literature, mineral wool <span class="assumed">[ASSUMED]</span></td></tr>
@@ -668,15 +668,15 @@
 <h2>9. Verification Status</h2>
 <table>
   <tr><th>Concern</th><th>Status</th><th>Evidence</th></tr>
-  <tr><td>API RP 583 temperature window (50&ndash;175&deg;C)</td><td class="gate-pass">PASS</td><td>Baseline at 120&deg;C reproduces $i_{\text{corr}}$ peak; deterministic 10-yr WT $= 0.136$ mm.</td></tr>
-  <tr><td>FAD uses API 579-1 Level 2 Option B</td><td class="gate-pass">PASS</td><td>$f(L_r)$ matches Eq.&nbsp;(13); $L_{r,\max}$ derived from X52 SMYS/UTS; trajectory plotted in panel&nbsp;G.</td></tr>
+  <tr><td>Commonly cited CUI range (50&ndash;175&deg;C)</td><td class="gate-pass">PASS</td><td>Baseline at 120&deg;C reproduces $i_{\text{corr}}$ peak; deterministic 10-yr WT $= 0.136$ mm.</td></tr>
+  <tr><td>FAD uses API 579-1 Level 2</td><td class="gate-pass">PASS</td><td>$f(L_r)$ matches Eq.&nbsp;(13); $L_{r,\max}$ derived from X52 SMYS/UTS; trajectory plotted in panel&nbsp;G.</td></tr>
   <tr><td>Strang splitting 2nd-order in time</td><td class="gate-pass">PASS</td><td>EC&middot;HY&middot;TH&middot;HY&middot;EC schedule with EC at $\Delta t/2$, TH at $\Delta t$; CN sub-operators are $\mathcal{O}(\Delta t^2)$.</td></tr>
   <tr><td>Analytical benchmarks close</td><td class="gate-pass">PASS</td><td>Faraday 0.034 %, Arrhenius 0 %, Butler-Volmer&rarr;Tafel 0 %, $D_\theta$ scaling 0 %, steady-state $T_{\text{outer}}$ 0.79 K vs slab approximation.</td></tr>
   <tr><td>Inverse problem identifiable on stated range</td><td class="gate-pass">PASS</td><td>Recovery error &lt; 1 % on $S \in [0, S_{\text{ref}}]$ in 3/3 synthetic cases; locked as regression test. Above $S_{\text{ref}}$ the BC saturates &mdash; explicitly out of identifiable range.</td></tr>
   <tr><td>Adjoint formulation</td><td class="gate-fail">NOT IMPLEMENTED</td><td>Out of scope for v1.1.0. The 1D single-parameter inverse uses golden-section line search; finite-difference cost is negligible at this dimensionality.</td></tr>
   <tr><td>2D axisymmetric coupling along $z$</td><td class="gate-fail">NOT IMPLEMENTED</td><td>Geometry mesh has axial nodes but PDE solvers are 1D radial. Documented as known limitation; future work.</td></tr>
   <tr><td>Cybersecurity (STRIDE on DFOS)</td><td class="gate-pass">PASS</td><td>Threat model in README; SHA-256 audit chain with tamper detection (regression-tested); OT-segment VLAN for DFOS network.</td></tr>
-  <tr><td>Reproducibility</td><td class="gate-pass">PASS</td><td>154 tests, 5 benchmarks, $\sim 70$ s deterministic pipeline. CI matrix on Python 3.11&ndash;3.13 &times; Ubuntu/macOS/Windows. Generated artefacts attached to GitHub release.</td></tr>
+  <tr><td>Reproducibility</td><td class="gate-pass">PASS</td><td>156 tests, 5 benchmarks, $\sim 2$ min deterministic pipeline. CI matrix on Python 3.11&ndash;3.13 &times; Ubuntu/macOS/Windows. Generated artefacts attached to GitHub release.</td></tr>
 </table>
 
 <hr class="section-rule">

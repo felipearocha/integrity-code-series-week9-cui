@@ -1,5 +1,6 @@
 """
-2D axisymmetric finite-difference mesh for CUI simulation.
+Finite-difference mesh for CUI simulation. The solvers are 1D radial
+(axisymmetric); the axial nodes are built but not used by them.
 
 Domain radial layers:
   [r_i, r_o]           steel pipe wall

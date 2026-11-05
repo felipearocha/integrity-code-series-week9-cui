@@ -1,6 +1,6 @@
 {
   "title": "Integrity Code Series - Week 9 - CUI Coupled Thermohygro-Electrochemical Simulation",
-  "description": "<p>Three-way coupled physics-first simulator for Corrosion Under Insulation (CUI) on insulated carbon-steel process piping. Couples Fourier heat conduction through the insulation annulus, Philip-de Vries hygrothermal moisture transport driven by capillary and thermal gradients, and Butler-Volmer electrochemical corrosion kinetics at the steel surface. All three fields are advanced together via Strang second-order operator splitting. A DFOS-informed inverse problem recovers moisture source magnitude and location from outer-cladding temperature observations.</p><p>Anchored to AMPP 2022 (CUI causes ~60% of refinery pipe leaks), API RP 583 critical temperature window (50-175C), and PHMSA Docket 2026-1520 (April 24, 2026). 151 tests, 5 analytical benchmarks.</p>",
+  "description": "<p>Three-way coupled physics-first simulator for Corrosion Under Insulation (CUI) on insulated carbon-steel process piping. Couples Fourier heat conduction through the insulation annulus, Philip-de Vries hygrothermal moisture transport driven by capillary and thermal gradients, and Butler-Volmer electrochemical corrosion kinetics at the steel surface. All three fields are advanced together via Strang second-order operator splitting. A DFOS-informed inverse problem recovers moisture source magnitude from outer-cladding temperature observations.</p><p>Context: CUI caused about 60% of pipe leaks in a Texas refinery case study (Cuervo and McQueen, AMPP 2022). The process temperature of 120 C sits in the commonly cited 50-175 C CUI range. 156 tests, 5 analytical benchmarks.</p>",
   "upload_type": "software",
   "access_right": "open",
   "license": "MIT",
@@ -37,8 +37,9 @@
     "API RP 583 (2014). Corrosion Under Insulation and Fireproofing.",
     "Philip J.R., de Vries D.A. (1957). Moisture movement in porous materials under temperature gradients. Transactions, AGU 38(2): 222-232.",
     "Strang G. (1968). On the construction and comparison of difference schemes. SIAM J. Numerical Analysis 5(3): 506-517.",
-    "AMPP (2022). Corrosion Under Insulation Industry Survey.",
-    "PHMSA Docket 2026-1520 (April 24, 2026). External corrosion threats on hazardous liquid pipelines."
+    "Cuervo B., McQueen M. (2022). Corrosion Under Insulation and Atmospheric Corrosion in the Refinery Industry: An Accurate Approach to Estimate Corrosion Growth Rates, a Texas Refinery Case Study. AMPP Annual Conference.",
+    "Bourga R., Wang B., Moore P., Janin Y. (2016). Comparison of BS 7910 and API 579-1/ASME FFS-1 solutions with regards to leak-before-break. ASME PVP2016-63876. https://doi.org/10.1115/PVP2016-63876",
+    "PHMSA (April 24, 2026). Pipeline Safety: Clarifying Hazardous Liquid Pipeline Integrity Management Guidance. Direct final rule, Docket PHMSA-2026-1520, Amdt. 195-118."
   ],
   "language": "eng",
   "version": "1.1.1"

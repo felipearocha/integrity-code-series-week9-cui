@@ -18,7 +18,7 @@ above all.
    or material constant must reference the source (API code clause, peer-reviewed
    paper, or an `[ASSUMED]` flag with rationale). Update both the source code
    comment AND the README equation block.
-2. **Tests stay green.** All 151+ tests must pass on Python 3.11, 3.12, and 3.13
+2. **Tests stay green.** All 156 tests must pass on Python 3.11, 3.12, and 3.13
    before a PR is mergeable. CI enforces this.
 3. **Benchmarks stay tight.** The five analytical benchmarks in
    `validation/benchmarks.py` must close to within their existing tolerances
@@ -35,13 +35,13 @@ above all.
 
 ```bash
 git clone https://github.com/felipearocha/integrity-code-series-week9-cui.git
-cd REPO
+cd integrity-code-series-week9-cui
 python -m venv .venv
 source .venv/bin/activate              # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"                # installs runtime + dev tooling
 
 # Sanity check
-pytest tests/ -v                       # 151+ tests
+pytest tests/ -v                       # 156 tests
 python validation/benchmarks.py        # 5 analytical benchmarks
 python run_all.py                      # full pipeline, ~70 s
 ```
