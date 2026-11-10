@@ -14,6 +14,10 @@ Volmer corrosion kinetics — all solved together via Strang operator splitting.
 Includes a DFOS-informed inverse problem to recover holiday source magnitude
 from outer-cladding temperature observations.
 
+![Monte Carlo wall loss at 10 years, N = 10,000: CDF with P50, P90 and P95 marked, and histogram, both against the 20 % wall-thickness limit of 1.64 mm](assets/figures/panel_c_mc_distribution.png)
+
+*Monte Carlo wall loss at 10 years (N = 10,000, seed 42): P50 = 0.137 mm, P95 = 0.433 mm; 2 of 10,000 samples exceed the 20 % wall limit of 1.64 mm.*
+
 ## Problem Statement
 
 CUI caused approximately 60% of all pipe leaks in a Texas refinery case study (Cuervo & McQueen,
