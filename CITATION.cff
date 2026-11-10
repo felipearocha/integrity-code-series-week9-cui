@@ -10,7 +10,7 @@ authors:
 repository-code: "https://github.com/felipearocha/integrity-code-series-week9-cui"
 url: "https://github.com/felipearocha/integrity-code-series-week9-cui"
 abstract: >
-  Three-way coupled physics-first simulator for Corrosion Under Insulation (CUI) on insulated carbon-steel process piping. Couples Fourier heat conduction through the insulation annulus, Philip-de Vries hygrothermal moisture transport driven by capillary and thermal gradients, and Butler-Volmer electrochemical corrosion kinetics at the steel surface. All three fields are advanced together via Strang second-order operator splitting. A DFOS-informed inverse problem recovers moisture source magnitude and location from outer-cladding temperature observations. Anchored to AMPP 2022 (CUI causes ~60% of refinery pipe leaks), API RP 583 critical temperature window (50-175C), and PHMSA Docket 2026-1520 (April 24, 2026). 151 tests, 5 analytical benchmarks.
+  Three-way coupled physics-first simulator for Corrosion Under Insulation (CUI) on insulated carbon-steel process piping. Couples Fourier heat conduction through the insulation annulus, Philip-de Vries hygrothermal moisture transport driven by capillary and thermal gradients, and Butler-Volmer electrochemical corrosion kinetics at the steel surface. All three fields are advanced together via Strang second-order operator splitting. A DFOS-informed inverse problem recovers moisture source magnitude from outer-cladding temperature observations. Context: CUI caused about 60% of pipe leaks in a Texas refinery case study (Cuervo and McQueen, AMPP 2022). The process temperature of 120 C sits in the commonly cited 50-175 C CUI range. 156 tests, 5 analytical benchmarks.
 keywords:
   - CUI
   - corrosion under insulation

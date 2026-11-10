@@ -3,7 +3,7 @@
 [![CI](https://github.com/felipearocha/integrity-code-series-week9-cui/actions/workflows/ci.yml/badge.svg)](https://github.com/felipearocha/integrity-code-series-week9-cui/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
-[![Tests: 154 passing](https://img.shields.io/badge/tests-154%20passing-brightgreen.svg)](tests)
+[![Tests: 156 passing](https://img.shields.io/badge/tests-156%20passing-brightgreen.svg)](tests)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20172508.svg)](https://doi.org/10.5281/zenodo.20172508)
 
@@ -14,50 +14,40 @@ Volmer corrosion kinetics — all solved together via Strang operator splitting.
 Includes a DFOS-informed inverse problem to recover holiday source magnitude
 from outer-cladding temperature observations.
 
-## Integrity Code Series
-
-Part of an ongoing series of physics-first integrity simulators by Felipe Rocha:
-
-| # | Repo | Domain |
-|---|---|---|
-| Week 3 | [integrity-code-series-week3-f1-lap-simulation](https://github.com/felipearocha/integrity-code-series-week3-f1-lap-simulation) | F1 lap simulation (six coupled ODEs) |
-| Week 6 | [integrity-code-series-week6-smartphone-galvanic](https://github.com/felipearocha/integrity-code-series-week6-smartphone-galvanic) | Smartphone galvanic corrosion (Laplace + Butler-Volmer) |
-| Week 7 | [integrity-code-series-week7-h2-lferw](https://github.com/felipearocha/integrity-code-series-week7-h2-lferw) | LF-ERW H2 conversion (B31.12 + NACE TM0316) |
-| Week 8 | [integrity-code-series-week8-creep-fatigue-heater](https://github.com/felipearocha/integrity-code-series-week8-creep-fatigue-heater) | Creep-fatigue 9Cr-1Mo (Norton/Omega + Coffin-Manson) |
-| **Week 9** | **[integrity-code-series-week9-cui](https://github.com/felipearocha/integrity-code-series-week9-cui)** | **CUI thermohygro-electrochemical (3 PDEs, Strang) — this repo** |
-| Week 10 | [integrity-code-series-week10-nnph-scc](https://github.com/felipearocha/integrity-code-series-week10-nnph-scc) | NNpHSCC full-physics (Chen-Sutherby-Xing + BS 7910) |
-| Week 11 | [integrity-code-series-week11-erosion-corrosion-multiphase](https://github.com/felipearocha/integrity-code-series-week11-erosion-corrosion-multiphase) | Erosion-corrosion multiphase (NORSOK M-506 + DNV-RP-O501 + G119 + API 579) |
-| Bonus | [Vibration-Accelerated-Corrosion-Coupled-Mechano-Electrochemical-Simulation](https://github.com/felipearocha/Vibration-Accelerated-Corrosion-Coupled-Mechano-Electrochemical-Simulation) | Vibration-accelerated corrosion (SDOF + Butler-Volmer + Archard) |
-| Bonus | [synthetic-integrity-digital-twin-piml](https://github.com/felipearocha/synthetic-integrity-digital-twin-piml) | Physics-informed neural-network surrogate |
-| Bonus | [integrity-data-foundation](https://github.com/felipearocha/integrity-data-foundation) | Engineering data validation baseline |
-
-## Quickstart
-
-```bash
-git clone https://github.com/felipearocha/integrity-code-series-week9-cui.git
-cd REPO
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-python run_all.py        # ~70 s on a laptop; produces 7 figures + 1 GIF + audit_chain.json
-pytest tests/ -v         # 154 tests
-python validation/benchmarks.py   # 5 analytical benchmarks
-```
-
 ## Problem Statement
 
-Corrosion Under Insulation (CUI) on carbon steel process piping causes ~60% of pipe
-leaks in documented refinery case studies (AMPP 2022). It progresses unseen beneath
-insulation systems for years. PHMSA Docket 2026-1520 (April 24, 2026) places external
-corrosion threats on hazardous liquid pipelines under active regulatory scrutiny.
-API RP 583 identifies 50-175 C as the critical temperature window for CUI on carbon steel.
+CUI caused approximately 60% of all pipe leaks in a Texas refinery case study (Cuervo & McQueen,
+AMPP 2022). It progresses unseen beneath insulation systems for years. PHMSA direct final rule
+PHMSA-2026-1520 (April 24, 2026) clarifies integrity management guidance for hazardous liquid and
+CO2 pipelines. CUI on carbon steel is commonly cited as most severe between about 50 and 175 C;
+the 120 C process temperature used here sits in that range.
 
 This package simulates three-way coupled physics: heat conduction through the insulation
 annulus, hygrothermal moisture transport driven by capillary and thermal gradients, and
 Butler-Volmer electrochemical corrosion at the steel surface — all solved together via
-Strang operator splitting. A DFOS-informed inverse problem recovers moisture source
-locations from outer cladding temperature measurements.
+Strang operator splitting. A DFOS-informed inverse problem recovers the moisture source
+magnitude from outer cladding temperature measurements.
 
----
+## Results
+
+From `python run_all.py` (seed 42). The inputs are the nominal and `[ASSUMED]` values in
+`src/constants.py`, so these numbers illustrate the model and do not describe a real line.
+
+| Output | Value |
+|---|---|
+| Deterministic wall loss at 10 yr | 0.1360 mm (about 0.014 mm/yr) |
+| Cladding temperature at 10 yr | 58.6 C |
+| Monte Carlo, N = 10,000, wall loss at 10 yr | P50 = 0.1374 mm, P95 = 0.4328 mm |
+| PoF at 10 yr (wall loss above 20% of nominal wall) | 0.0002, no perforations |
+| Spearman rank correlation with wall loss | $i_{0,\mathrm{ref}}$ +0.70, $E_a$ +0.69, $S_{\mathrm{mag}}$ +0.02, $\theta_{\mathrm{crit}}$ 0.00 |
+| GBR surrogate | $R^2$ = 0.9370, MAE = 0.0263 mm |
+| Inverse recovery of $S_{\mathrm{mag}}$, 0.03 K noise | errors of 0.2%, 0.0% and 0.9% |
+| FAD, 10 yr baseline | 0 of 122 points unacceptable |
+
+Wall loss is controlled by the two kinetic parameters. The insulation wets within about a month
+in the baseline, so the moisture source hardly matters over 10 years. Figures are generated in
+`assets/figures/` by `run_all.py` and attached to GitHub releases; they are not stored in the
+repository.
 
 ## Governing Equations
 
@@ -65,138 +55,171 @@ locations from outer cladding temperature measurements.
 
 Full rendered (MathJax) reference: **[docs/equations.html](docs/equations.html)** — open in any browser.
 
-The eight headline governing equations, rendered natively on GitHub:
+The solvers are 1D radial (axisymmetric): the axial nodes in `src/geometry.py` are built but not
+used.
 
-**Field 1 — Fourier heat conduction (Eq. 1):**
+### Field 1 — Fourier heat conduction (Eq. 1)
 
-$$\rho_{\text{eff}}(\theta_w)\,c_{p,\text{eff}}(\theta_w)\,\frac{\partial T}{\partial t} \;=\; \nabla\!\cdot\!\bigl(\lambda_{\text{eff}}(\theta_w)\,\nabla T\bigr) \;+\; Q_{\text{corr}}$$
-
-**Field 2 — Philip-de Vries hygrothermal moisture transport (Eq. 2):**
-
-$$\frac{\partial \theta_w}{\partial t} \;=\; \nabla\!\cdot\!\bigl(D_\theta(\theta_w)\,\nabla \theta_w\bigr) \;+\; \nabla\!\cdot\!\bigl(D_T(\theta_w,T)\,\nabla T\bigr)$$
-
-**Field 3 — Butler-Volmer electrochemical kinetics (Eq. 3):**
-
-$$i_{\text{corr}} = \begin{cases} i_0(T)\left[\,e^{\,\alpha_a F \eta /(RT)} - e^{-\alpha_c F \eta /(RT)}\,\right], & \theta_w > \theta_{\text{crit}} \\[4pt] 0, & \theta_w \le \theta_{\text{crit}} \end{cases}$$
-
-**Wall loss — Faraday's law (Eq. 4):**
-
-$$\frac{dWT}{dt} = -\frac{M_{\text{Fe}}}{n\,F\,\rho_{\text{steel}}}\; i_{\text{corr}}(T, \theta_w)$$
-
-**Strang operator splitting (Eq. 5):**
-
-$$u^{\,n+1} = L_{\text{EC}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\text{HY}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\text{TH}}(\Delta t) \circ L_{\text{HY}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\text{EC}}\!\left(\tfrac{\Delta t}{2}\right)\, u^{\,n}$$
-
-**Tikhonov inverse problem (Eq. 6):**
-
-$$\min_{S}\; J(S) = \bigl(T_{\text{obs}} - T_{\text{model}}(S)\bigr)^{2} + \lambda_{\text{reg}}\,S^{2}, \qquad S \in [0, S_{\text{ref}}]$$
-
-**Monte Carlo / probability of failure (Eq. 9-10):**
-
-$$\mathrm{PoF}(t^{*}) = \frac{1}{N}\sum_{k=1}^{N} \mathbf{1}\!\left[\, WT_k(t^{*}) > 0.20\, t_{\text{nom}} \,\right]$$
-
-**Failure Assessment Diagram — API 579-1 Level 2 Option B (Eq. 12-13):**
-
-$$f(L_r) = \left[\,1 + 0.5\,L_r^{2}\,\right]^{-1/2} \left[\,0.3 + 0.7\,e^{-0.65\,L_r^{6}}\,\right]$$
-
-### Field 1 — Fourier Heat Conduction (Eq. 1)
-
-```
-rho_eff(theta_w)*cp_eff(theta_w)*dT/dt = div(lambda_eff(theta_w)*grad(T)) + Q_corr
+```math
+\rho_{\mathrm{eff}}(\theta_w)\,c_{p,\mathrm{eff}}(\theta_w)\,\frac{\partial T}{\partial t} = \nabla\cdot\bigl(\lambda_{\mathrm{eff}}(\theta_w)\,\nabla T\bigr) + Q_{\mathrm{corr}}
 ```
 
-Boundary conditions:
-```
-T(r_i) = T_process                                      (1a) inner wall Dirichlet
--lambda*dT/dr|_outer = h_conv*(T-T_inf) + eps*sigma*(T^4-T_inf^4)  (1b) Robin outer
-dT/dz|_ends = 0                                         (1c) adiabatic axial ends
-```
+$T$ is temperature [K], $\theta_w$ the moisture volume fraction [-], $\rho_{\mathrm{eff}}$ density
+[kg/m³], $c_{p,\mathrm{eff}}$ specific heat [J/kg/K], $\lambda_{\mathrm{eff}}$ conductivity [W/m/K]
+and $Q_{\mathrm{corr}}$ the corrosion heat source [W/m³]. Boundary conditions:
 
-### Field 2 — Philip-de Vries Hygrothermal Moisture Transport (Eq. 2)
-
-```
-d(theta_w)/dt = div(D_theta(theta_w)*grad(theta_w)) + div(D_T(theta_w,T)*grad(T))
+```math
+T(r_i) = T_{\mathrm{process}}, \qquad -\lambda\,\left.\frac{\partial T}{\partial r}\right|_{\mathrm{outer}} = h_{\mathrm{conv}}\,(T - T_\infty) + \epsilon\,\sigma\,(T^{4} - T_\infty^{4})
 ```
 
-Where:
-```
-D_theta(theta_w) = D_theta0 * exp(beta_theta * theta_w)             (2a)
-D_T(theta_w, T)  = D_vap_atm * xi(theta_w) * f(theta_w, T)          (2b)
-theta_w|_holiday = f * THETA_SAT + (1 - f) * THETA_INIT             (2c) partial-holiday Dirichlet
-                   with f = min(S_mag / S_ref, 1)
-J_w.n|_intact    = 0                                                (2d) zero-flux
-theta_w|_t=0     = THETA_INIT [ASSUMED]                             (2e)
-```
+$r_i$ is the inner radius, $h_{\mathrm{conv}}$ the film coefficient [W/m²/K], $\epsilon$ the
+emissivity, $\sigma$ the Stefan-Boltzmann constant and $T_\infty$ the ambient temperature [K].
 
-The partial-holiday BC (2c) models the cladding defect as a fraction `f`
-of the outer circumference at saturation; `S_mag = S_ref` (default
-`S_REF_DEFAULT = 1e-6 m^3/m^3/s`) is a fully wet holiday, `S_mag = 0` is
-intact cladding. Above `S_ref` the BC saturates and S_mag is non-
-identifiable from T_clad alone, so the inverse problem (Eq. 6) is
-restricted to the unique-recovery range `S ∈ [0, S_ref]`.
+### Field 2 — Philip-de Vries hygrothermal moisture transport (Eq. 2)
 
-### Field 3 — Butler-Volmer Electrochemical Kinetics (Eq. 3)
+**[SOURCE: Philip & de Vries 1957; simplified form ASSUMED]**
 
-```
-i_corr = i0(T) * [exp(alpha_a*F*eta/(RT)) - exp(-alpha_c*F*eta/(RT))]  if theta_w > theta_crit
-       = 0                                                                 if theta_w <= theta_crit
-
-i0(T) = i0_ref * exp(-Ea/R * (1/T - 1/T_ref))                   (3a)
+```math
+\frac{\partial \theta_w}{\partial t} = \nabla\cdot\bigl(D_\theta(\theta_w)\,\nabla \theta_w\bigr) + \nabla\cdot\bigl(D_T(\theta_w,T)\,\nabla T\bigr)
 ```
 
-### Wall Loss — Faraday's Law (Eq. 4)
-
-```
-dWT/dt = -M_Fe/(n*F*rho_steel) * i_corr(T, theta_w)
+```math
+D_\theta = D_{\theta 0}\,e^{\beta_\theta\,\theta_w}, \qquad D_T = 0.05\,D_{\theta 0}\,\theta_w\,\frac{T}{373.15\ \mathrm{K}}
 ```
 
-### Strang Operator Splitting (Eq. 5)
+$D_\theta$ and $D_T$ are the isothermal [m²/s] and thermal [m²/s/K, as implemented] moisture
+diffusivities, with $D_{\theta 0}$ and $\beta_\theta$ listed under
+[ASSUMED Parameter Flags](#assumed-parameter-flags). Boundary and initial conditions:
 
-```
-u^{n+1} = L_EC(dt/2) o L_HY(dt/2) o L_TH(dt) o L_HY(dt/2) o L_EC(dt/2) u^n
-```
-
-### Tikhonov Inverse Problem (Eq. 6)
-
-```
-min_S J(S) = (T_obs - T_model(S))^2 + lambda_reg * S^2     S in [0, S_ref]
+```math
+\theta_w\big|_{\mathrm{holiday}} = f\,\theta_{\mathrm{sat}} + (1-f)\,\theta_{\mathrm{init}}, \qquad f = \min\!\left(\frac{S_{\mathrm{mag}}}{S_{\mathrm{ref}}},\,1\right), \qquad \theta_w\big|_{t=0} = \theta_{\mathrm{init}}
 ```
 
-Single-parameter 1D inverse for `S_mag`, solved by golden-section line
-search on `J(S)` in `src/inverse_problem.py`. Recovery error is &lt;1% on
-the identifiable range `S in [0, S_ref]` for synthetic DFOS cases with
-0.03 K measurement noise (see `[6/9]` in `run_all.py`). Above S_ref the
-model BC saturates and the inverse is non-injective by construction.
-A full adjoint formulation is out of scope.
+$S_{\mathrm{mag}}$ is the moisture source magnitude [m³/m³/s]. The partial-holiday condition blends
+the outer boundary between dry and saturated; $S_{\mathrm{mag}} = S_{\mathrm{ref}}$ = 1e-6 is a
+fully wet holiday and $S_{\mathrm{mag}} = 0$ is intact cladding. Above $S_{\mathrm{ref}}$ the
+boundary saturates and $S_{\mathrm{mag}}$ cannot be identified from cladding temperature, so the
+inverse problem is restricted to $0 \le S \le S_{\mathrm{ref}}$.
 
-### Monte Carlo / PoF (Eq. 9-10)
+### Field 3 — Butler-Volmer electrochemical kinetics (Eq. 3)
 
-```
-xi = {S_mag, theta_crit, i0_ref, E_a, lambda_eff, L_defect}  N_MC = 10,000 (LHS)
-PoF(t*) = (1/N) * sum( 1[WT_k(t*) > 0.20 * t_nom] )
-```
-
-### FAD — API 579-1 Level 2 Option B (Eq. 12-13)
-
-```
-f(Lr) = [1 + 0.5*Lr^2]^(-1/2) * [0.3 + 0.7*exp(-0.65*Lr^6)]
-Lr_max = 0.5*(1 + UTS/SMYS)
+```math
+i_{\mathrm{corr}} =
+\begin{cases}
+i_0(T)\left[e^{\alpha_a F \eta/(RT)} - e^{-\alpha_c F \eta/(RT)}\right], & \theta_w > \theta_{\mathrm{crit}} \\
+0, & \theta_w \le \theta_{\mathrm{crit}}
+\end{cases}
 ```
 
----
+```math
+i_0(T) = i_{0,\mathrm{ref}}\,\exp\!\left[-\frac{E_a}{R}\left(\frac{1}{T} - \frac{1}{T_{\mathrm{ref}}}\right)\right]
+```
+
+$i_{\mathrm{corr}}$ is the corrosion current density [A/m²], $\alpha_a$ and $\alpha_c$ the transfer
+coefficients, $F$ the Faraday constant, $\eta$ the overpotential [V], $R$ the gas constant, $E_a$
+the activation energy [J/mol] and $\theta_{\mathrm{crit}}$ the electrolyte threshold. This field is
+algebraic, not a PDE.
+
+### Wall loss — Faraday's law (Eq. 4)
+
+```math
+\frac{dW_L}{dt} = \frac{M_{\mathrm{Fe}}}{n\,F\,\rho_{\mathrm{steel}}}\;i_{\mathrm{corr}}(T, \theta_w)
+```
+
+$W_L$ is wall loss [m], $M_{\mathrm{Fe}}$ the molar mass [kg/mol], $n$ = 2 and $\rho_{\mathrm{steel}}$
+the steel density [kg/m³].
+
+### Strang operator splitting (Eq. 5)
+
+**[SOURCE: Strang 1968]**
+
+```math
+u^{\,n+1} = L_{\mathrm{EC}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\mathrm{HY}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\mathrm{TH}}(\Delta t) \circ L_{\mathrm{HY}}\!\left(\tfrac{\Delta t}{2}\right) \circ L_{\mathrm{EC}}\!\left(\tfrac{\Delta t}{2}\right) u^{\,n}
+```
+
+$L_{\mathrm{EC}}$, $L_{\mathrm{HY}}$ and $L_{\mathrm{TH}}$ advance the electrochemical, moisture and
+thermal fields over the step $\Delta t$.
+
+### Tikhonov inverse problem (Eq. 6)
+
+```math
+\min_{S}\; J(S) = \bigl(T_{\mathrm{obs}} - T_{\mathrm{model}}(S)\bigr)^{2} + \lambda_{\mathrm{reg}}\,S^{2}, \qquad 0 \le S \le S_{\mathrm{ref}}
+```
+
+Single-parameter 1D inverse for $S_{\mathrm{mag}}$, solved by golden-section line search on $J(S)$
+in `src/inverse_problem.py`. $\lambda_{\mathrm{reg}}$ is the regularisation weight. A full adjoint
+formulation is out of scope.
+
+### Monte Carlo and probability of failure (Eq. 9-10)
+
+```math
+\xi = \{S_{\mathrm{mag}},\,\theta_{\mathrm{crit}},\,i_{0,\mathrm{ref}},\,E_a\}, \qquad N = 10{,}000\ \text{(LHS)}
+```
+
+```math
+\mathrm{PoF}(t^{*}) = \frac{1}{N}\sum_{k=1}^{N} \mathbf{1}\!\left[\,W_{L,k}(t^{*}) \ge 0.20\,t_{\mathrm{nom}}\,\right]
+```
+
+The samples use the closed form below, not the coupled solver. It sets $T = T_{\mathrm{process}}$
+and matches the coupled baseline within 1.2% at nominal parameters (0.1376 mm against 0.1360 mm):
+
+```math
+W_L(t) = \frac{M_{\mathrm{Fe}}\,i_{\mathrm{corr}}(T_{\mathrm{process}})}{n\,F\,\rho_{\mathrm{steel}}}\;\max\!\left(t - \frac{\theta_{\mathrm{crit}}}{S_{\mathrm{mag}}},\;0\right)
+```
+
+### FAD — API 579-1 Level 2 (Eq. 12-13)
+
+**[SOURCE: API 579-1/ASME FFS-1 Level 2, as quoted in Bourga et al. 2016]**
+
+```math
+f(L_r) = \bigl(1 - 0.14\,L_r^{2}\bigr)\bigl(0.3 + 0.7\,e^{-0.65\,L_r^{6}}\bigr), \qquad L_r \le L_{r,\max} = \frac{1}{2}\left(1 + \frac{\mathrm{UTS}}{\mathrm{SMYS}}\right)
+```
+
+$L_r$ is the hoop stress on the remaining wall divided by SMYS.
+
+## Quickstart
+
+```bash
+git clone https://github.com/felipearocha/integrity-code-series-week9-cui.git
+cd integrity-code-series-week9-cui
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python run_all.py        # about 1-2 min on a laptop; produces 7 figures + 1 GIF + audit_chain.json
+pytest tests/ -v         # 156 tests
+python validation/benchmarks.py   # 5 analytical benchmarks
+```
+
+## Limitations
+
+- **1D radial.** There is no axial or circumferential variation, so a holiday acts on the whole
+  outer boundary.
+- **The Monte Carlo is a closed form,** and it has no thermal or moisture-transport feedback.
+  Insulation conductivity and holiday size are not sampled, because the coupled solver is
+  insensitive to the first (0.13601 mm against 0.13600 mm at 0.03 and 0.06 W/m/K) and the model
+  has no term for the second.
+- **Corrosion rates are not calibrated.** The baseline rate of about 0.014 mm/yr is far below the
+  field rates of up to 1.2 mm/yr reported by Cuervo & McQueen (2022). $i_{0,\mathrm{ref}}$ and
+  $\eta$ are `[ASSUMED]`, so PoF values here are not field estimates.
+- **The FAD treats uniform wall loss as a crack** of depth $W_L$, with $K_{\mathrm{mat}}$ `[ASSUMED]`.
+- **Standards.** API 579-1 and API RP 583 were not checked against the standards themselves. The
+  FAD curve comes from a published paper that quotes API 579-1, and the 50-175 C range is a
+  commonly cited figure.
+- **Pipeline rule context.** PHMSA-2026-1520 applies to hazardous liquid and CO2 pipelines, not to
+  in-plant process piping.
 
 ## Repository Structure
 
 ```
-integrity_code_series_week9_cui_thermohygro/
+integrity-code-series-week9-cui/
 ├── run_all.py
 ├── requirements.txt
 ├── README.md
 ├── EXECUTION_ORDER.md
 ├── conftest.py
+├── week9_brief_latex.html    Technical brief (HTML)
 ├── src/
 │   ├── constants.py          Physical constants, [ASSUMED] flags
-│   ├── geometry.py           2D axisymmetric FDM mesh
+│   ├── geometry.py           Radial FDM mesh (axial nodes unused)
 │   ├── thermal_field.py      Fourier PDE solver (Crank-Nicolson)
 │   ├── moisture_field.py     Philip-de Vries solver (explicit, sub-stepped)
 │   ├── electrochemistry.py   Butler-Volmer + Faraday wall loss
@@ -220,13 +243,11 @@ integrity_code_series_week9_cui_thermohygro/
 │   ├── test_moisture_electrochemistry.py
 │   ├── test_extended.py
 │   └── test_remaining.py
-├── assets/figures/           8 static PNG panels (300 DPI)
+├── assets/figures/           7 PNG panels (300 DPI), generated by run_all.py
 ├── assets/animations/        cui_moisture_front.gif
 ├── assets/audit_chain.json
 └── notebooks/
 ```
-
----
 
 ## [ASSUMED] Parameter Flags
 
@@ -234,7 +255,7 @@ integrity_code_series_week9_cui_thermohygro/
 |-----------|-------|-------|
 | D_theta0 (mineral wool) | 6.0e-11 m^2/s | Literature porous media, mineral wool [ASSUMED] |
 | beta_theta | 5.0 | D_theta exponential slope [ASSUMED] |
-| theta_crit | 0.05 vol fraction | API RP 583 qualitative guidance [ASSUMED] |
+| theta_crit | 0.05 vol fraction | Electrolyte threshold [ASSUMED] |
 | i0_ref at 25 C | 1.0e-5 A/m^2 | General Fe dissolution literature [ASSUMED] |
 | E_a Fe dissolution | 50 kJ/mol | General electrochemistry literature [ASSUMED] |
 | eta_mixed | 0.15 V | Mixed potential anodic overpotential [ASSUMED] |
@@ -242,23 +263,20 @@ integrity_code_series_week9_cui_thermohygro/
 | D_T coupling | 0.05 * D_theta0 * theta_w * T_norm | Philip-de Vries simplified [ASSUMED] |
 | Holiday source S | 1.0e-6 m^3/m^3/s | Continuous wetting rate [ASSUMED] |
 
----
+## Scope
 
-## Escalation Table (vs. Week 8)
-
-| Dimension | Week 8 | Week 9 |
-|-----------|--------|--------|
-| PDE count | 1 (PR EOS + chemistry, algebraic) | 3 coupled PDEs (Fourier + PdV + BV) |
-| Geometry | 1D spatial pipeline | 2D axisymmetric annulus |
-| Inverse problem | None | DFOS-informed Tikhonov inversion |
-| Operator method | Sequential | Strang splitting (2nd order) |
-| Sensor integration | None | DFOS noise model + synthetic tests |
-
----
+| Dimension | Week 9 |
+|-----------|--------|
+| Coupled fields | 2 PDEs (Fourier, Philip-de Vries) + Butler-Volmer kinetics |
+| Geometry | 1D radial (axisymmetric) annulus |
+| Inverse problem | DFOS-informed Tikhonov inversion (single parameter) |
+| Operator method | Strang splitting |
+| Sensor integration | DFOS noise model + synthetic tests |
 
 ## Cybersecurity (STRIDE)
 
-STRIDE threat model applied to DFOS sensor network feeding inverse solver:
+STRIDE threat model for a DFOS sensor network feeding the inverse solver. Only the SHA-256
+audit chain is implemented here; the other mitigations are deployment recommendations:
 
 | Threat | Mitigation |
 |--------|-----------|
@@ -270,18 +288,15 @@ STRIDE threat model applied to DFOS sensor network feeding inverse solver:
 | Elevation of Privilege | Surrogate out-of-bounds triggers human review |
 | Data Poisoning | Physics residual validation before GBR retraining |
 
----
+## Source Confidence Tiers
 
-## Anti-Hallucination Note
+Parameters anchored to literature but not calibrated to a specific site are flagged
+`[ASSUMED]` in `src/constants.py` and collected in the **[ASSUMED] Parameter Flags** table
+above. Sources are cited in `docs/equations.html`, and the main model forms carry
+`[SOURCE: ...]` tags in `src/`. In the Integrity Code Series tiering this maps to:
 
-Every physical parameter carries an explicit provenance tag. Constants read directly from
-a standard or the literature are stated as such; parameters anchored to literature but not
-calibrated to a specific site are flagged `[ASSUMED]` in `src/constants.py` and collected
-in the **[ASSUMED] Parameter Flags** table above. In the Integrity Code Series tiering this
-maps to:
-
-- **T1 [SOURCE]** — values fixed by physics or a cited standard (the API 579-1 Level 2
-  Option B FAD curve, Faraday's law, the API RP 583 50-175 C CUI window).
+- **T1 [SOURCE]** — values fixed by physics or a published source (the API 579-1 Level 2
+  FAD curve as quoted by Bourga et al. 2016, Faraday's law, Strang 1968).
 - **T2 [SOURCE]** — quantities derived from T1 inputs (effective insulation properties, the
   golden-section Tikhonov recovery restricted to `S ∈ [0, S_ref]`).
 - **T3 [ASSUMED]** — practitioner / literature estimates that are not site-calibrated: the
@@ -289,29 +304,22 @@ maps to:
   threshold `theta_crit`, the Fe-dissolution `i0_ref` / `E_a` / mixed overpotential, and the
   `D_T` coupling form.
 
-No equation, constant, or citation in this repository or in `docs/equations.html` is
-introduced beyond what the model actually implements.
+## Integrity Code Series
 
----
+Part of an ongoing series of physics-first integrity simulators by Felipe Rocha:
 
-## Disclaimer
-
-Research tool only. Not for design, fitness-for-service, or safety-critical decisions without site-specific calibration and independent PE review.
-
-Additionally: API RP 583, API 579-1, and PHMSA regulations take precedence over model
-output, and `[ASSUMED]` parameters must be validated against site-specific inspection data
-before any operational use.
-
----
-
-## License
-
-MIT — Felipe Rocha. See [LICENSE](LICENSE).
-
----
-
-Integrity Code Series — ICS2 | Week 9 | Physics-first. Verification over visibility.
----
+| # | Repo | Domain |
+|---|---|---|
+| Week 3 | [integrity-code-series-week3-f1-lap-simulation](https://github.com/felipearocha/integrity-code-series-week3-f1-lap-simulation) | F1 lap simulation (six-state model) |
+| Week 6 | [integrity-code-series-week6-smartphone-galvanic](https://github.com/felipearocha/integrity-code-series-week6-smartphone-galvanic) | Smartphone galvanic corrosion (Laplace + Butler-Volmer) |
+| Week 7 | [integrity-code-series-week7-h2-lferw](https://github.com/felipearocha/integrity-code-series-week7-h2-lferw) | LF-ERW H2 conversion (H diffusion + HA-FCG + B31.12-form MAOP) |
+| Week 8 | [integrity-code-series-week8-creep-fatigue-heater](https://github.com/felipearocha/integrity-code-series-week8-creep-fatigue-heater) | Creep-fatigue 9Cr-1Mo (Norton/Omega + Coffin-Manson) |
+| **Week 9** | **[integrity-code-series-week9-cui](https://github.com/felipearocha/integrity-code-series-week9-cui)** | **CUI thermohygro-electrochemical (2 PDEs + Butler-Volmer, Strang) — this repo** |
+| Week 10 | [integrity-code-series-week10-nnph-scc](https://github.com/felipearocha/integrity-code-series-week10-nnph-scc) | NNpHSCC full-physics (Chen-Sutherby-Xing + BS 7910) |
+| Week 11 | [integrity-code-series-week11-erosion-corrosion-multiphase](https://github.com/felipearocha/integrity-code-series-week11-erosion-corrosion-multiphase) | Erosion-corrosion multiphase (NORSOK M-506 + DNV-RP-O501 + G119 + API 579) |
+| Bonus | [Vibration-Accelerated-Corrosion-Coupled-Mechano-Electrochemical-Simulation](https://github.com/felipearocha/Vibration-Accelerated-Corrosion-Coupled-Mechano-Electrochemical-Simulation) | Vibration-accelerated corrosion (SDOF + Butler-Volmer + Archard) |
+| Bonus | [synthetic-integrity-digital-twin-piml](https://github.com/felipearocha/synthetic-integrity-digital-twin-piml) | Physics-informed neural-network surrogate |
+| Bonus | [integrity-data-foundation](https://github.com/felipearocha/integrity-data-foundation) | Engineering data validation baseline |
 
 ## How to Cite
 
@@ -342,4 +350,21 @@ The two DOIs Zenodo provides are:
 | `10.5281/zenodo.20172508` (concept)   | Always resolves to the latest version - use this for citation.     |
 | `10.5281/zenodo.20172509` (version)   | Pinned to v1.1.1 specifically - use when reproducibility matters.  |
 
+The Zenodo v1.1.1 archive predates the corrections listed under Unreleased in the
+[changelog](CHANGELOG.md).
+
 A machine-readable citation file is also available in [`CITATION.cff`](CITATION.cff) - GitHub will display a "Cite this repository" widget at the top right of the repo page that exports BibTeX / APA / RIS automatically.
+
+## Disclaimer
+
+Research tool only. Not for design, fitness-for-service, or safety-critical decisions without site-specific calibration and independent PE review.
+
+Additionally: API RP 583, API 579-1, and PHMSA regulations take precedence over model
+output, and `[ASSUMED]` parameters must be validated against site-specific inspection data
+before any operational use.
+
+## License
+
+MIT — Felipe Rocha. See [LICENSE](LICENSE).
+
+Integrity Code Series — ICS2 | Week 9 | Physics-first. Verification over visibility.

@@ -199,7 +199,7 @@ def plot_fad(result, out_path="assets/figures/panel_g_fad.png"):
     fig, ax = plt.subplots(figsize=(8, 6), constrained_layout=True)
     fig.patch.set_facecolor("white")
     _ax(ax)
-    ax.plot(Lr_line, Kr_line, color=COLOR_NAVY, linewidth=1.2, label="API 579-1 Level 2 Option B")
+    ax.plot(Lr_line, Kr_line, color=COLOR_NAVY, linewidth=1.2, label="API 579-1 Level 2")
     ax.axvline(
         Lr_max, color=COLOR_NAVY, linewidth=0.7, linestyle="--", label=f"Lr_max = {Lr_max:.3f}"
     )

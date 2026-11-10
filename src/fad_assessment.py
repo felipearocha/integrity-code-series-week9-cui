@@ -1,4 +1,7 @@
-"""API 579-1 Level 2 Option B FAD — identical structure to Week 8, adapted for X52."""
+"""API 579-1 Level 2 FAD, adapted for X52.
+
+Curve as quoted from API 579-1/ASME FFS-1 in [SOURCE: Bourga et al. 2016, PVP2016-63876].
+"""
 
 import numpy as np
 
@@ -15,7 +18,7 @@ def fad_curve(Lr, Lr_max=None):
     Lr = np.asarray(Lr, dtype=float)
     Kr = np.zeros_like(Lr)
     v = Lr <= Lr_max
-    Kr[v] = (1.0 + 0.5 * Lr[v] ** 2) ** (-0.5) * (0.3 + 0.7 * np.exp(-0.65 * Lr[v] ** 6))
+    Kr[v] = (1.0 - 0.14 * Lr[v] ** 2) * (0.3 + 0.7 * np.exp(-0.65 * Lr[v] ** 6))
     return Kr
 
 

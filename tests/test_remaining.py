@@ -147,9 +147,17 @@ class TestMonteCarlo:
             "theta_crit",
             "i0_ref",
             "E_a",
-            "lambda_eff",
-            "L_defect",
         }
+
+    def test_closed_form_matches_coupled_baseline(self):
+        # The closed form must reproduce the coupled solver at nominal parameters.
+        from src.constants import EA_FE, I0_REF, THETA_CRIT
+        from src.coupled_solver import run_baseline
+        from src.monte_carlo import _wl_from_params
+
+        coupled = run_baseline()["wl"][-1]
+        closed = _wl_from_params(1e-6, THETA_CRIT, I0_REF, EA_FE, 10.0)
+        assert abs(closed - coupled) / coupled < 0.02
 
     def test_spearman_in_range(self, mc):
         from src.monte_carlo import spearman_sensitivity
@@ -200,7 +208,7 @@ class TestSurrogate:
         assert surr["mae_test"] >= 0
 
     def test_feature_importance_length(self, surr):
-        assert len(surr["feature_importance"]) == 6
+        assert len(surr["feature_importance"]) == 4
 
     def test_predictions_non_negative(self, surr):
         from src.monte_carlo import run_monte_carlo
@@ -217,6 +225,12 @@ class TestFAD:
         from src.fad_assessment import Lr_max_value
 
         assert Lr_max_value() > 1.0
+
+    def test_fad_curve_level2_hand_value(self):
+        # Hand calculation at Lr = 1: (1 - 0.14) * (0.3 + 0.7 * exp(-0.65)) = 0.86 * 0.66543 = 0.5723
+        from src.fad_assessment import fad_curve
+
+        assert abs(fad_curve(np.array([1.0]))[0] - 0.5723) < 1e-3
 
     def test_fad_at_0_near_1(self):
         from src.fad_assessment import fad_curve
@@ -303,8 +317,6 @@ class TestVisualizationOutputs:
             "theta_crit": -0.2,
             "i0_ref": 0.5,
             "E_a": 0.4,
-            "lambda_eff": -0.1,
-            "L_defect": 0.05,
         }
         out = str(tmp_path / "figs" / "test_sensitivity.png")
         os.makedirs(os.path.dirname(out), exist_ok=True)
